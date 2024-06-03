@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome to PawsPlan</h1>
+        <p class="lead">A comprehensive pet management tool to keep track of your pets' health and needs.</p>
+        <hr class="my-4">
+        <p>Sign up to start managing your pets today.</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('main.register') }}" role="button">Sign Up</a>
+    </div>
+{% endblock %}
