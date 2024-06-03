@@ -3,6 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
 from app.forms import RegistrationForm, LoginForm
 from app.models import User
+from app.utils import send_verification_email, confirm_verification_token
 
 bp = Blueprint('main', __name__)
 
@@ -21,7 +22,8 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash('Your account has been created! You are now able to log in', 'success')
+        send_verification_email(user)
+        flash('An email has been sent to verify your account.', 'info')
         return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -33,9 +35,13 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+            if user.is_verified:
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+            else:
+                flash('Your account is not verified. Please check your email.', 'warning')
+                return redirect(url_for('main.login'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -49,3 +55,28 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html', title='Dashboard')
+
+@bp.route("/confirm_email/<token>")
+def confirm_email(token):
+    email = confirm_verification_token(token)
+    if email:
+        user = User.query.filter_by(email=email).first_or_404()
+        if user.is_verified:
+            flash('Account already verified. Please log in.', 'success')
+        else:
+            user.is_verified = True
+            db.session.commit()
+            flash('Your account has been verified!', 'success')
+    else:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+    return redirect(url_for('main.login'))
+
+
+
+@bp.route("/delete_all_users")
+def delete_all_users():
+    users = User.query.all()
+    for user in users:
+        db.session.delete(user)
+    db.session.commit()
+    return "All users have been deleted.", 200
