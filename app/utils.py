@@ -22,9 +22,9 @@ def send_verification_email(user):
     token = generate_verification_token(user.email)
     link = url_for('main.confirm_email', token=token, _external=True)
     response = requests.post(
-        "https://api.mailgun.net/v3/sandboxd9a730d3dd804451878b6d91b0729d31.mailgun.org/messages",
-        auth=("api", "bf14a30b12192a1023e9ba4bd0d5958c-a4da91cf-b2409e7f"),
-        data={"from": "PawsPlan <postmaster@sandboxd9a730d3dd804451878b6d91b0729d31.mailgun.org>",
+        f"https://api.mailgun.net/v3/{current_app.config['MAILGUN_DOMAIN']}/messages",
+        auth=("api", current_app.config['MAILGUN_API_KEY']),
+        data={"from": f"PawsPlan <postmaster@{current_app.config['MAILGUN_DOMAIN']}>",
               "to": [user.email],
               "subject": "Email Verification",
               "text": f'Please click the link to verify your email address: {link}',
