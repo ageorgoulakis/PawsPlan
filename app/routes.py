@@ -71,8 +71,6 @@ def confirm_email(token):
         flash('The confirmation link is invalid or has expired.', 'danger')
     return redirect(url_for('main.login'))
 
-
-
 @bp.route("/delete_all_users")
 def delete_all_users():
     users = User.query.all()

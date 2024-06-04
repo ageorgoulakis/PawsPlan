@@ -1,6 +1,7 @@
-import requests
+from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app, url_for
+from app import mail
 
 def generate_verification_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -21,15 +22,8 @@ def confirm_verification_token(token, expiration=3600):
 def send_verification_email(user):
     token = generate_verification_token(user.email)
     link = url_for('main.confirm_email', token=token, _external=True)
-    response = requests.post(
-        f"https://api.mailgun.net/v3/{current_app.config['MAILGUN_DOMAIN']}/messages",
-        auth=("api", current_app.config['MAILGUN_API_KEY']),
-        data={"from": f"PawsPlan <postmaster@{current_app.config['MAILGUN_DOMAIN']}>",
-              "to": [user.email],
-              "subject": "Email Verification",
-              "text": f'Please click the link to verify your email address: {link}',
-              "html": f'<p>Please click the link to verify your email address: <a href="{link}">Verify Email</a></p>'}
-    )
-    print(response.status_code)
-    print(response.json())
-    return response
+    msg = Message('Email Verification',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[user.email])
+    msg.body = f'Please click the link to verify your email address: {link}'
+    mail.send(msg)
