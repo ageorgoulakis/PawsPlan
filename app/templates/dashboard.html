@@ -1,7 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-    <h1>Welcome to your Dashboard, {{ current_user.username }}!</h1>
-    <p>Here you can manage your pets, appointments, and more.</p>
+    <style>
+        .welcome-message {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .welcome-message h1 {
+            font-size: 3em;
+            color: #007bff; /* Blue color */
+        }
+        .welcome-message p {
+            font-size: 1.5em;
+            color: #555;
+            margin-top: 20px;
+        }
+        .welcome-message .highlight {
+            color: #28a745; /* Green color for emphasis */
+            font-weight: bold;
+        }
+    </style>
+
+    <div class="welcome-message">
+        <h1>Welcome to PawsPlan, {{ current_user.username }}!</h1>
+        <p>"Our mission is to assist you in tracking your pet's <span class="highlight">healthcare needs</span> seamlessly. With PawsPlan, you can effortlessly manage appointments, monitor health records, and ensure your furry friend receives the best care possible. Join us in keeping your pets healthy and happy.!"
+        </p>
+    </div>
     <!-- Add your dashboard content here -->
 {% endblock %}
