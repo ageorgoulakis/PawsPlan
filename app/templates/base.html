@@ -5,30 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .navbar-custom {
+            background-color: #e6e6e6; /* Light grey color */
+            height: 75px; /* Shorter height */
+        }
+        .navbar-custom .nav-link {
+            color: black; /* Black button color */
+        }
+        .navbar-brand {
+            /* Your existing styles */
+            color: black; /* Change text color to white */
+            font-size: 24px; /* Adjust font size */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: none; /* Remove underline */
+        }
+
+        .navbar-brand .paw-icon {
+            margin-right: 10px;
+            color: black; /* Black paw icon color */
+        }
+        .navbar-custom .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+        .navbar-secondary {
+            background-color: #1b1b1b; /* Dark grey color */
+            height: 40px; /* Shorter height */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align to the right */
+            padding-right: 20px; /* Add some padding */
+            color: white; /* White text color */
+        }
+        .navbar-tertiary {
+            background-color: #71a2cf; /* Blue color */
+            display: flex;
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            color: rgb(255, 255, 255); /* Black text color */
+            border-bottom-left-radius: 15%; /* Add curved border to bottom left corner */
+            border-bottom-right-radius: 15%; /* Add curved border to bottom right corner */
+            box-shadow: 0px -5px 5px rgba(0, 0, 0, 0); /* Add shadow to create depth */
+            transform: translateY(1px); /* Move the navbar down slightly */
+            padding: 50px 20px; /* Add padding */
+            text-align: center; /* Center text */
+        }
+        .navbar-tertiary img {
+            height: 400px; /* Set the height of the image */
+            width: auto; /* Maintain aspect ratio */
+            margin-right: 20px; /* Add margin to separate from text */
+        }
+        .get-started-button {
+            background-color: white; /* White background */
+            color: #71a2cf; /* Blue text color */
+            border: none; /* No border */
+            padding: 10px 20px; /* Add padding */
+            font-size: 20px; /* Larger font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Cursor style on hover */
+            transition: background-color 0.3s; /* Smooth transition */
+            margin-top: 20px; /* Add margin on top */
+        }
+        .get-started-button:hover {
+            background-color: #f0f0f0; /* Light grey background on hover */
+        }
+        .jumbotron-custom {
+            background-color: transparent; /* Remove background color */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        .paw-icon-img {
+            height: 60px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+            margin-right: 0px; /* Add margin to separate from text */
+        }
+    </style>
+    <!-- Add FontAwesome for the paw icon -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('main.home') }}">PawsPlan</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
-                    </li>
-                {% endif %}
-            </ul>
+    {% block content_no_style %}
+        <!-- Secondary Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-secondary">
+            <!-- Add email address -->
+            <div>pawsplan1@gmail.com</div>
+        </nav>
+        <!-- Main Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <a class="navbar-brand" href="{{ url_for('main.home') }}">
+                <img src="https://www.edsaugusta.com/wp-content/uploads/2024/02/Paw-Print-Light-Blue-Transparent-01.png" alt="PawsPlan Logo" class="paw-icon-img">
+                <i class="fas fa-paw paw-icon"></i>PawsPlan
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <!-- Tertiary Navbar -->
+        <div class="navbar-tertiary">
+            <div>
+                <div class="text-message" style="font-family: 'Poppins', sans-serif; font-size: 75px; margin-right: 20px;">
+                    Your Pet's Health<br>Is Our Priority!
+                </div>
+                <!-- Add button below the text -->
+                <button class="get-started-button" onclick="window.location.href='{{ url_for('main.register') }}'">Get Started</button>
+            </div>
+            <!-- Add an image in the blue navbar -->
+            <img src="https://cdn.openart.ai/uploads/image_KizIvQxf_1715055673147_raw.png" alt="Your Image">
         </div>
-    </nav>
+    {% endblock %}
+    
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -41,5 +146,8 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
