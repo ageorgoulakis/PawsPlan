@@ -1,7 +1,12 @@
+import os
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app, url_for
 from app import mail
+
+def ensure_directory_exists(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 def generate_verification_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
