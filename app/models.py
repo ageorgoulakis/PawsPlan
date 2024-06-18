@@ -23,8 +23,20 @@ class Pet(db.Model):
     name = db.Column(db.String(100), nullable=False)
     breed = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    medical_history = db.Column(db.Text, nullable=True)
+    picture = db.Column(db.String(100), nullable=False)  # storing filename
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    history = db.relationship('PetHistory', backref='pet', lazy='dynamic')
 
     def __repr__(self):
         return f"Pet('{self.name}', '{self.breed}', '{self.age}')"
+
+class PetHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_type = db.Column(db.String(100), nullable=False)
+    event_date = db.Column(db.Date, nullable=False)
+    event_time = db.Column(db.Time, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+
+    def __repr__(self):
+        return f"PetHistory('{self.event_type}', '{self.event_date}', '{self.event_time}', '{self.description}')"
