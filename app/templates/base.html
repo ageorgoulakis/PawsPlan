@@ -15,13 +15,11 @@
             color: black; /* Black button color */
         }
         .navbar-brand {
-            /* Your existing styles */
             color: black; /* Change text color to white */
             font-size: 24px; /* Adjust font size */
             font-weight: bold; /* Make the text bold */
             text-decoration: none; /* Remove underline */
         }
-
         .navbar-brand .paw-icon {
             margin-right: 10px;
             color: black; /* Black paw icon color */
@@ -120,6 +118,7 @@
                 </ul>
             </div>
         </nav>
+        {% block hideable_navbar %}
         <!-- Tertiary Navbar -->
         <div class="navbar-tertiary">
             <div>
@@ -132,6 +131,7 @@
             <!-- Add an image in the blue navbar -->
             <img src="https://cdn.openart.ai/uploads/image_KizIvQxf_1715055673147_raw.png" alt="Your Image">
         </div>
+        {% endblock %}
     {% endblock %}
     
     <div class="container">
@@ -151,3 +151,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
