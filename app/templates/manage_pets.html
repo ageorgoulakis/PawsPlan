@@ -1,0 +1,151 @@
+<!-- manage_pets.html -->
+{% extends "base.html" %}
+{% block title %}Pet Management{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    .left-navbar {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 150px;
+        left: 0;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+        border-right: 1px solid #ddd;
+    }
+    .left-navbar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #333;
+        display: block;
+    }
+    .left-navbar a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    .main-content {
+        margin-left: 220px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .main-content-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .main-content h1 {
+        font-size: 3em;
+        color: #71a2cf;
+        display: inline-block;
+        margin-right: 20px;
+    }
+    .main-content .btn-add-pet {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        margin-left: 40px;
+    }
+    .main-content .btn-add-pet:hover {
+        background-color: #5a92c6;
+    }
+    .pet-row {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #ddd;
+        width: 100%;
+        max-width: 1000px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .pet-row img {
+        width: 150px;
+        height: auto;
+        margin-right: 40px;
+    }
+    .pet-info {
+        display: flex;
+        gap: 80px;
+        flex-grow: 1;
+    }
+    .pet-info span {
+        font-size: 1.5em;
+        color: #333;
+    }
+    .btn-edit-pet, .btn-delete-pet, .btn-history {
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-top: 10px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px; /* Add space between buttons */
+    }
+    .btn-edit-pet {
+        background-color: #007bff;
+    }
+    .btn-edit-pet:hover {
+        background-color: #0056b3;
+    }
+    .btn-history {
+        background-color: #28a745; /* Light green color */
+    }
+    .btn-history:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+    .btn-delete-pet {
+        background-color: #dc3545;
+    }
+    .btn-delete-pet:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="left-navbar">
+    <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+</div>
+
+<div class="main-content">
+    <div class="main-content-header">
+        <h1>Pet Management</h1>
+        <a href="{{ url_for('main.add_pet') }}" class="btn-add-pet">Add Pet</a>
+    </div>
+    <div class="pet-list">
+        {% for pet in pets %}
+            <div class="pet-row">
+                <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
+                <div class="pet-info">
+                    <span>{{ pet.name }}</span>
+                    <span>Age: {{ pet.age }}</span>
+                    <span>Breed: {{ pet.breed }}</span>
+                </div>
+                <div>
+                    <a href="{{ url_for('main.edit_pet', pet_id=pet.id) }}" class="btn-edit-pet">Edit</a>
+                    <a href="{{ url_for('main.pet_history', pet_id=pet.id) }}" class="btn-history">History</a>
+                    <form method="POST" action="{{ url_for('main.delete_pet', pet_id=pet.id) }}">
+                        <button type="submit" class="btn-delete-pet" onclick="return confirm('Are you sure you want to delete this pet?');">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
