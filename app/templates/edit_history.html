@@ -1,0 +1,80 @@
+<!-- edit_history.html -->
+{% extends "base.html" %}
+{% block title %}Edit History Event{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    .main-content {
+        padding: 20px;
+    }
+    .history-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .history-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf; /* Light blue color */
+    }
+    .history-container label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .history-container input[type="text"],
+    .history-container input[type="date"],
+    .history-container input[type="time"],
+    .history-container textarea,
+    .history-container select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .history-container .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf; /* Light blue color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .history-container .btn-save:hover {
+        background-color: #5a92c6; /* Darker blue */
+    }
+</style>
+
+<div class="main-content">
+    <div class="history-container">
+        <h1>Edit History Event for {{ pet.name }}</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <label for="event_type">Event Type</label>
+            {{ form.event_type }}
+            
+            <label for="event_date">Event Date</label>
+            {{ form.event_date }}
+
+            <label for="event_time">Event Time</label>
+            {{ form.event_time }}
+
+            <label for="description">Description</label>
+            {{ form.description }}
+
+            <button type="submit" class="btn-save">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
