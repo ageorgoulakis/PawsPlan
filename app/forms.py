@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, FileField, TextAreaField, DateField, TimeField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from app.models import User
 
@@ -25,3 +25,17 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+class AddPetForm(FlaskForm):
+    name = StringField('Pet Name', validators=[DataRequired()])
+    age = IntegerField('Age', validators=[DataRequired()])
+    breed = StringField('Breed', validators=[DataRequired()])
+    picture = FileField('Upload Picture', validators=[DataRequired()])
+    submit = SubmitField('Save Pet')
+
+class PetHistoryForm(FlaskForm):
+    event_type = SelectField('Event Type', choices=[('Vet Appointment', 'Vet Appointment'), ('Vaccine', 'Vaccine'), ('Other', 'Other')], validators=[DataRequired()])
+    event_date = DateField('Event Date', format='%Y-%m-%d', validators=[DataRequired()])
+    event_time = TimeField('Event Time', format='%H:%M', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    submit = SubmitField('Save')
