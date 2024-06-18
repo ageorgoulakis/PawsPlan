@@ -1,0 +1,121 @@
+<!-- history.html -->
+{% extends "base.html" %}
+{% block title %}{{ pet.name }}'s History{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    .main-content {
+        padding: 20px;
+    }
+    .history-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .history-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf; /* Light blue color */
+    }
+    .history-container label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .history-container input[type="text"],
+    .history-container input[type="date"],
+    .history-container input[type="time"],
+    .history-container textarea,
+    .history-container select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .history-container .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf; /* Light blue color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .history-container .btn-save:hover {
+        background-color: #5a92c6; /* Darker blue */
+    }
+    .history-events {
+        margin-top: 40px;
+    }
+    .history-event {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .history-event h4 {
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .btn-edit-history {
+        background-color: #28a745; /* Light green color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-edit-history:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+</style>
+
+<div class="main-content">
+    <div class="history-container">
+        <h1>{{ pet.name }}'s Medical History</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <label for="event_type">Event Type</label>
+            {{ form.event_type }}
+            
+            <label for="event_date">Event Date</label>
+            {{ form.event_date }}
+
+            <label for="event_time">Event Time</label>
+            {{ form.event_time }}
+
+            <label for="description">Description</label>
+            {{ form.description }}
+
+            <button type="submit" class="btn-save">Save</button>
+        </form>
+
+        <div class="history-events">
+            <h2>History Events</h2>
+            {% for event in history_events %}
+                <div class="history-event">
+                    <div>
+                        <h4>{{ event.event_type }} on {{ event.event_date }} at {{ event.event_time }}</h4>
+                        <p>{{ event.description }}</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('main.edit_pet_history', pet_id=pet.id, history_id=event.id) }}" class="btn-edit-history">Edit</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
