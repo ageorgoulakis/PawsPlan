@@ -1,9 +1,11 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, current_app, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
-from app.forms import RegistrationForm, LoginForm
-from app.models import User
+from app.forms import RegistrationForm, LoginForm, AddPetForm, PetHistoryForm
+from app.models import User, Pet, PetHistory
 from app.utils import send_verification_email, confirm_verification_token
+from werkzeug.utils import secure_filename
+import os
 
 bp = Blueprint('main', __name__)
 
@@ -54,7 +56,8 @@ def logout():
 @bp.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template('dashboard.html', title='Dashboard')
+    pets = Pet.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', title='Dashboard', pets=pets)
 
 @bp.route("/confirm_email/<token>")
 def confirm_email(token):
@@ -75,6 +78,133 @@ def confirm_email(token):
 def delete_all_users():
     users = User.query.all()
     for user in users:
+        # Delete pets associated with the user
+        pets = Pet.query.filter_by(user_id=user.id).all()
+        for pet in pets:
+            # Delete history associated with the pet
+            PetHistory.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
+            db.session.delete(pet)
+        # Delete the user
         db.session.delete(user)
     db.session.commit()
-    return "All users have been deleted.", 200
+    return "All users, their pets, and their histories have been deleted.", 200
+
+
+# Route for managing pets
+@bp.route("/manage_pets")
+@login_required
+def manage_pets():
+    pets = Pet.query.filter_by(user_id=current_user.id).all()
+    return render_template('manage_pets.html', title='Pet Management', pets=pets)
+
+# Route for adding a pet
+@bp.route("/add_pet", methods=['GET', 'POST'])
+@login_required
+def add_pet():
+    form = AddPetForm()
+    if form.validate_on_submit():
+        picture_file = secure_filename(form.picture.data.filename)
+        picture_path = os.path.join(current_app.root_path, 'static/pet_pics', picture_file)
+        form.picture.data.save(picture_path)  # Save the file to the static/pet_pics directory
+        pet = Pet(name=form.name.data, age=form.age.data, breed=form.breed.data, picture=picture_file, user_id=current_user.id)
+        db.session.add(pet)
+        db.session.commit()
+        flash('Your pet has been added!', 'success')
+        return redirect(url_for('main.dashboard'))
+    return render_template('add_pet.html', title='Add Pet', form=form)
+
+# Route to edit a pet
+@bp.route("/edit_pet/<int:pet_id>", methods=['GET', 'POST'])
+@login_required
+def edit_pet(pet_id):
+    pet = Pet.query.get_or_404(pet_id)
+    if pet.owner != current_user:
+        flash('You do not have permission to edit this pet.', 'danger')
+        return redirect(url_for('main.manage_pets'))
+    form = AddPetForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = secure_filename(form.picture.data.filename)
+            picture_path = os.path.join(current_app.root_path, 'static/pet_pics', picture_file)
+            form.picture.data.save(picture_path)
+            pet.picture = picture_file
+        pet.name = form.name.data
+        pet.age = form.age.data
+        pet.breed = form.breed.data
+        db.session.commit()
+        flash('Your pet has been updated!', 'success')
+        return redirect(url_for('main.manage_pets'))
+    elif request.method == 'GET':
+        form.name.data = pet.name
+        form.age.data = pet.age
+        form.breed.data = pet.breed
+    return render_template('edit_pet.html', title='Edit Pet', form=form, pet=pet)
+
+# Route to delete a pet
+@bp.route("/delete_pet/<int:pet_id>", methods=['POST'])
+@login_required
+def delete_pet(pet_id):
+    pet = Pet.query.get_or_404(pet_id)
+    if pet.owner != current_user:
+        flash('You do not have permission to delete this pet.', 'danger')
+        return redirect(url_for('main.manage_pets'))
+
+    # Delete all history associated with the pet
+    PetHistory.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
+
+    # Now delete the pet
+    db.session.delete(pet)
+    db.session.commit()
+    flash('The pet and its history have been deleted!', 'success')
+    return redirect(url_for('main.manage_pets'))
+
+# Route for viewing and adding pet history
+@bp.route("/pet/<int:pet_id>/history", methods=['GET', 'POST'])
+@login_required
+def pet_history(pet_id):
+    pet = Pet.query.get_or_404(pet_id)
+    if pet.owner != current_user:
+        abort(403)
+
+    form = PetHistoryForm()
+    if form.validate_on_submit():
+        history_event = PetHistory(
+            event_type=form.event_type.data,
+            event_date=form.event_date.data,
+            event_time=form.event_time.data,
+            description=form.description.data,
+            pet_id=pet.id
+        )
+        db.session.add(history_event)
+        db.session.commit()
+        flash('History event added!', 'success')
+        return redirect(url_for('main.pet_history', pet_id=pet.id))
+    
+    history_events = PetHistory.query.filter_by(pet_id=pet.id).all()
+    return render_template('history.html', pet=pet, form=form, history_events=history_events)
+
+# New route for editing pet history
+@bp.route("/pet/<int:pet_id>/history/<int:history_id>/edit", methods=['GET', 'POST'])
+@login_required
+def edit_pet_history(pet_id, history_id):
+    pet = Pet.query.get_or_404(pet_id)
+    history_event = PetHistory.query.get_or_404(history_id)
+    if pet.owner != current_user or history_event.pet_id != pet.id:
+        abort(403)
+    
+    form = PetHistoryForm()
+    if form.validate_on_submit():
+        history_event.event_type = form.event_type.data
+        history_event.event_date = form.event_date.data
+        history_event.event_time = form.event_time.data
+        history_event.description = form.description.data
+        db.session.commit()
+        flash('History event updated!', 'success')
+        return redirect(url_for('main.pet_history', pet_id=pet.id))
+    elif request.method == 'GET':
+        form.event_type.data = history_event.event_type
+        form.event_date.data = history_event.event_date
+        form.event_time.data = history_event.event_time
+        form.description.data = history_event.description
+    
+    return render_template('edit_history.html', pet=pet, form=form, history_event=history_event)
