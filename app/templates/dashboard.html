@@ -8,100 +8,131 @@
 </style>
 {% endblock %}
 {% block content %}
-    <style>
-        .left-navbar {
-            width: 200px;
-            height: 100%;
-            position: fixed;
-            top: 150px; /* Further adjusted value */
-            left: 0;
-            background-color: #f8f9fa; /* Light grey color */
-            padding-top: 20px;
-            border-right: 1px solid #ddd; /* Add a border to the right side */
-        }
-        .left-navbar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-        }
-        .left-navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .main-content {
-            margin-left: 220px; /* Same as the width of the sidebar */
-            padding: 20px;
-            margin-top: 20px; /* Adjusted value */
-        }
-        .main-content h1,
-        .main-content h2.upcoming {
-            font-size: 3em;
-            color: #71a2cf; /* Light blue color */
-            margin-left: 200px; /* Move to the right even more */
-        }
-        .main-content h1 {
-            margin-bottom: 40px; /* Add some spacing below the title */
-        }
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: flex-start; /* Align cards to the start */
-            margin-left: 20px; /* Keep the cards slightly to the left */
-        }
-        .card {
-            width: 18rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .card img {
-            width: 100%;
-            height: auto;
-            border-bottom: 1px solid #ddd;
-        }
-        .card-body {
-            padding: 15px;
-        }
-        .card-title {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-        .card-text {
-            font-size: 1em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .upcoming {
-            font-size: 2em;
-            color: #71a2cf; /* Light blue color */
-            margin-top: 60px; /* Add some spacing above */
-            margin-left: 200px; /* Move to the right even more */
-        }
-    </style>
+<style>
+    .left-navbar {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 150px; /* Further adjusted value */
+        left: 0;
+        background-color: #f8f9fa; /* Light grey color */
+        padding-top: 20px;
+        border-right: 1px solid #ddd; /* Add a border to the right side */
+    }
+    .left-navbar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #333;
+        display: block;
+    }
+    .left-navbar a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    .main-content {
+        margin-left: 220px; /* Same as the width of the sidebar */
+        padding: 20px;
+        margin-top: 20px; /* Adjusted value */
+    }
+    .main-content h1,
+    .main-content h2.upcoming {
+        font-size: 3em;
+        color: #71a2cf; /* Light blue color */
+        margin-left: 200px; /* Move to the right even more */
+    }
+    .main-content h1 {
+        margin-bottom: 40px; /* Add some spacing below the title */
+    }
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start; /* Align cards to the start */
+        margin-left: 20px; /* Keep the cards slightly to the left */
+    }
+    .card {
+        width: 100%;
+        max-width: 24rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .card img {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid #ddd;
+    }
+    .card-body {
+        padding: 15px;
+    }
+    .card-title {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .card-text {
+        font-size: 1em;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .upcoming {
+        font-size: 2em;
+        color: #71a2cf; /* Light blue color */
+        margin-top: 60px; /* Add some spacing above */
+        margin-left: 200px; /* Move to the right even more */
+    }
+    .appointment-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 1em;
+        margin-bottom: 10px;
+        color: #333;
+    }
+</style>
 
-    <div class="left-navbar">
-        <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
-    </div>
+<div class="left-navbar">
+    <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+    <a href="{{ url_for('main.history_page') }}">History</a>
+    <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
+</div>
 
-    <div class="main-content">
-        <h1>Your Pets</h1>
-        <div class="card-container">
-            {% for pet in pets %}
-                <div class="card">
-                    <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ pet.name }}</h5>
-                        <p class="card-text">Age: {{ pet.age }}</p>
-                        <p class="card-text">Breed: {{ pet.breed }}</p>
-                    </div>
+<div class="main-content">
+    <h1>Your Pets</h1>
+    <div class="card-container">
+        {% for pet in pets %}
+            <div class="card">
+                <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pet.name }}</h5>
+                    <p class="card-text">Age: {{ pet.age }}</p>
+                    <p class="card-text">Breed: {{ pet.breed }}</p>
                 </div>
-            {% endfor %}
-        </div>
-        <h2 class="upcoming">Upcoming</h2>
+            </div>
+        {% endfor %}
     </div>
+    <h2 class="upcoming">Upcoming</h2>
+    <div class="card-container">
+        {% for appointment in appointments %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="appointment-info">
+                        <span><strong>Appointment -</strong></span>
+                        <span>{{ appointment.date.strftime('%A, %B %d, %Y') }}</span>
+                        <span>at</span>
+                        <span>{{ appointment.time.strftime('%I:%M %p') }}</span>
+                    </div>
+                    <p class="card-text">Pet: {{ appointment.pet.name }}</p>
+                    <p class="card-text">Veterinarian: {{ appointment.vet_name }}</p>
+                    <p class="card-text">{{ appointment.description }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
