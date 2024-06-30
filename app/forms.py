@@ -39,3 +39,12 @@ class PetHistoryForm(FlaskForm):
     event_time = TimeField('Event Time', format='%H:%M', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     submit = SubmitField('Save')
+
+class VetAppointmentForm(FlaskForm):
+    pet = SelectField('Select Pet', validators=[DataRequired()], coerce=int)
+    date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
+    time = TimeField('Time', format='%H:%M', validators=[DataRequired()])
+    vet_name = StringField('Veterinarian Name', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    submit = SubmitField('Save')
+
