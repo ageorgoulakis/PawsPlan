@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Vet Appointments{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    .left-navbar {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 150px;
+        left: 0;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+        border-right: 1px solid #ddd;
+    }
+    .left-navbar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #333;
+        display: block;
+    }
+    .left-navbar a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    .main-content {
+        margin-left: 220px; /* Adjust according to the width of the sidebar */
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .appointment-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .appointment-form h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf; /* Light blue color */
+    }
+    .appointment-form label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .appointment-form input,
+    .appointment-form select,
+    .appointment-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1.1em;
+    }
+    .appointment-form select {
+        line-height: 1.2; /* Adjust line-height for select box */
+        padding-top: 6px; /* Adjust padding to shift text up */
+        padding-bottom: 4px; /* Adjust padding to shift text up */
+    }
+    .appointment-form button {
+        width: 100%;
+        padding: 15px;
+        background-color: #71a2cf; /* Light blue color */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+    }
+    .appointment-form button:hover {
+        background-color: #5a92c6;
+    }
+</style>
+
+<div class="left-navbar">
+    <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+    <a href="{{ url_for('main.history_page') }}">History</a>
+    <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
+</div>
+
+<div class="main-content">
+    <div class="appointment-form">
+        <h1>Add Vet Appointment</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.pet.label(class="form-control-label") }}
+                {{ form.pet(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.date.label(class="form-control-label") }}
+                {{ form.date(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.time.label(class="form-control-label") }}
+                {{ form.time(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.vet_name.label(class="form-control-label") }}
+                {{ form.vet_name(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.description.label(class="form-control-label") }}
+                {{ form.description(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
