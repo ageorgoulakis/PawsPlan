@@ -1,11 +1,12 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint, current_app, abort
 from flask_login import login_user, current_user, logout_user, login_required
-from app import db, bcrypt
-from app.forms import RegistrationForm, LoginForm, AddPetForm, PetHistoryForm
-from app.models import User, Pet, PetHistory
-from app.utils import send_verification_email, confirm_verification_token
+from app import db, bcrypt, scheduler
+from app.forms import RegistrationForm, LoginForm, AddPetForm, PetHistoryForm, VetAppointmentForm
+from app.models import User, Pet, PetHistory, VetAppointment
+from app.utils import send_verification_email, confirm_verification_token, send_appointment_email, send_reminder_email
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime, timedelta
 
 bp = Blueprint('main', __name__)
 
@@ -56,8 +57,28 @@ def logout():
 @bp.route("/dashboard")
 @login_required
 def dashboard():
+    # Check for due appointments and move them to history
+    now = datetime.now()
+    due_appointments = VetAppointment.query.filter(
+        (VetAppointment.date < now.date()) | 
+        ((VetAppointment.date == now.date()) & (VetAppointment.time <= now.time()))
+    ).all()
+    for appointment in due_appointments:
+        history_event = PetHistory(
+            event_type='Vet Appointment',
+            event_date=appointment.date,
+            event_time=appointment.time,
+            description=appointment.description,
+            pet_id=appointment.pet_id
+        )
+        db.session.add(history_event)
+        db.session.delete(appointment)
+    db.session.commit()
+
+    # Fetch the updated list of pets and appointments
     pets = Pet.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard.html', title='Dashboard', pets=pets)
+    appointments = VetAppointment.query.join(Pet).filter(Pet.user_id == current_user.id).all()
+    return render_template('dashboard.html', title='Dashboard', pets=pets, appointments=appointments)
 
 @bp.route("/confirm_email/<token>")
 def confirm_email(token):
@@ -83,12 +104,13 @@ def delete_all_users():
         for pet in pets:
             # Delete history associated with the pet
             PetHistory.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
+            # Delete appointments associated with the pet
+            VetAppointment.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
             db.session.delete(pet)
         # Delete the user
         db.session.delete(user)
     db.session.commit()
     return "All users, their pets, and their histories have been deleted.", 200
-
 
 # Route for managing pets
 @bp.route("/manage_pets")
@@ -151,6 +173,8 @@ def delete_pet(pet_id):
 
     # Delete all history associated with the pet
     PetHistory.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
+    # Delete all appointments associated with the pet
+    VetAppointment.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
 
     # Now delete the pet
     db.session.delete(pet)
@@ -181,6 +205,11 @@ def pet_history(pet_id):
         return redirect(url_for('main.pet_history', pet_id=pet.id))
     
     history_events = PetHistory.query.filter_by(pet_id=pet.id).all()
+    # Format date and time
+    for event in history_events:
+        event.formatted_date = event.event_date.strftime('%A, %B %d, %Y')
+        event.formatted_time = event.event_time.strftime('%I:%M %p')
+    
     return render_template('history.html', pet=pet, form=form, history_events=history_events)
 
 # New route for editing pet history
@@ -208,3 +237,57 @@ def edit_pet_history(pet_id, history_id):
         form.description.data = history_event.description
     
     return render_template('edit_history.html', pet=pet, form=form, history_event=history_event)
+
+@bp.route("/history_page", methods=['GET', 'POST'])
+@login_required
+def history_page():
+    pets = Pet.query.filter_by(user_id=current_user.id).all()
+    selected_pet = None
+    history_events = []
+
+    if request.method == 'POST' or (request.method == 'GET' and request.args.get('pet_id')):
+        pet_id = request.form.get('pet') if request.method == 'POST' else request.args.get('pet_id')
+        if pet_id:
+            selected_pet = Pet.query.get(int(pet_id))
+            if selected_pet and selected_pet.owner == current_user:
+                history_events = PetHistory.query.filter_by(pet_id=selected_pet.id).all()
+                # Format date and time
+                for event in history_events:
+                    event.formatted_date = event.event_date.strftime('%A, %B %d, %Y')
+                    event.formatted_time = event.event_time.strftime('%I:%M %p')
+
+    return render_template('history_page.html', pets=pets, selected_pet=selected_pet, history_events=history_events)
+
+@bp.route("/appointments", methods=['GET', 'POST'])
+@login_required
+def appointments():
+    form = VetAppointmentForm()
+    form.pet.choices = [(pet.id, pet.name) for pet in Pet.query.filter_by(user_id=current_user.id).all()]
+    if form.validate_on_submit():
+        appointment = VetAppointment(
+            pet_id=form.pet.data,
+            date=form.date.data,
+            time=form.time.data,
+            vet_name=form.vet_name.data,
+            description=form.description.data
+        )
+        db.session.add(appointment)
+        db.session.commit()
+        send_appointment_email(current_user, appointment)
+
+        # Schedule reminder email 24 hours before the appointment
+        reminder_time = datetime.combine(appointment.date, appointment.time) - timedelta(hours=24)
+        print(f"Scheduling reminder for {reminder_time}")  # Add logging
+        scheduler.add_job(
+            func=send_reminder_email,
+            args=[current_user.id, appointment.id],
+            trigger='date',
+            run_date=reminder_time,
+            id=f'reminder_{appointment.id}',
+            replace_existing=True
+        )
+
+        flash('Appointment saved!', 'success')
+        return redirect(url_for('main.dashboard'))
+    return render_template('appointments.html', form=form)
+
