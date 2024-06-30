@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}History Page{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    .left-navbar {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 150px;
+        left: 0;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+        border-right: 1px solid #ddd;
+    }
+    .left-navbar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #333;
+        display: block;
+    }
+    .left-navbar a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    .main-content {
+        margin-left: 220px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .history-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .history-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf; /* Light blue color */
+    }
+    .history-events {
+        margin-top: 40px;
+    }
+    .history-event {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .history-event h4 {
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .btn-edit-history {
+        background-color: #28a745; /* Light green color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-edit-history:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+</style>
+
+<div class="left-navbar">
+    <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+    <a href="{{ url_for('main.history_page') }}">History</a>
+    <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
+</div>
+
+<div class="main-content">
+    <div class="history-container">
+        <h1>History Page</h1>
+        <form method="post" id="pet-select-form">
+            <div class="form-group">
+                <label for="pet">Select Pet</label>
+                <select name="pet" id="pet" class="form-control" onchange="document.getElementById('pet-select-form').submit();">
+                    <option value="" disabled selected>Select a pet</option>
+                    {% for pet in pets %}
+                        <option value="{{ pet.id }}" {% if selected_pet and selected_pet.id == pet.id %}selected{% endif %}>{{ pet.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <div class="history-events">
+            {% if selected_pet %}
+                <h2>{{ selected_pet.name }}'s Medical History</h2>
+                {% for event in history_events %}
+                    <div class="history-event">
+                        <div>
+                            <h4>{{ event.event_type }} on {{ event.formatted_date }} at {{ event.formatted_time }}</h4>
+                            <p>{{ event.description }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('main.edit_pet_history', pet_id=selected_pet.id, history_id=event.id) }}" class="btn-edit-history">Edit</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
