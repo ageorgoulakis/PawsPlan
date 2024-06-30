@@ -1,3 +1,4 @@
+<!-- add_pet.html -->
 {% extends "base.html" %}
 {% block title %}Add Pet{% endblock %}
 {% block hideable_navbar %}
@@ -78,6 +79,8 @@
 
     <div class="left-navbar">
         <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+        <a href="{{ url_for('main.history_page') }}">History</a>
+        <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
     </div>
 
     <div class="main-content">
