@@ -1,4 +1,3 @@
-from datetime import datetime
 from app import db, login_manager
 from flask_login import UserMixin
 
@@ -25,7 +24,8 @@ class Pet(db.Model):
     age = db.Column(db.Integer, nullable=False)
     picture = db.Column(db.String(100), nullable=False)  # storing filename
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    history = db.relationship('PetHistory', backref='pet', lazy='dynamic')
+    histories = db.relationship('PetHistory', backref='pet', lazy=True)
+    appointments = db.relationship('VetAppointment', backref='pet', lazy=True)
 
     def __repr__(self):
         return f"Pet('{self.name}', '{self.breed}', '{self.age}')"
@@ -38,5 +38,14 @@ class PetHistory(db.Model):
     description = db.Column(db.Text, nullable=False)
     pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
 
+class VetAppointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time, nullable=False)
+    vet_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+
     def __repr__(self):
-        return f"PetHistory('{self.event_type}', '{self.event_date}', '{self.event_time}', '{self.description}')"
+        return f"VetAppointment('{self.date}', '{self.time}', '{self.vet_name}')"
+
