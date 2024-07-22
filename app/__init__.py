@@ -35,11 +35,20 @@ def create_app():
     from app.utils import ensure_directory_exists
     ensure_directory_exists(os.path.join(app.root_path, 'static/pet_pics'))
 
-    from app import routes
-    app.register_blueprint(routes.bp)
+    from app.routes import bp as main_bp
+    app.register_blueprint(main_bp)
 
     if not scheduler.running:
         scheduler.start()
+    
+    # Remove existing job with the same ID if it exists
+    existing_job = scheduler.get_job('check_vaccine_due_dates')
+    if existing_job:
+        scheduler.remove_job('check_vaccine_due_dates')
+    
+    # Schedule the task
+    from app.tasks import check_vaccine_due_dates
+    scheduler.add_job(id='check_vaccine_due_dates', func=check_vaccine_due_dates, trigger='interval', minutes=1)  # Run every minute for testing
 
     return app
 
