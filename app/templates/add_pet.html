@@ -1,4 +1,3 @@
-<!-- add_pet.html -->
 {% extends "base.html" %}
 {% block title %}Add Pet{% endblock %}
 {% block hideable_navbar %}
@@ -10,39 +9,28 @@
 {% endblock %}
 {% block content %}
     <style>
-        .left-navbar {
-            width: 200px;
-            height: 100%;
-            position: fixed;
-            top: 150px; /* Further adjusted value */
-            left: 0;
-            background-color: #f8f9fa; /* Light grey color */
-            padding-top: 20px;
-            border-right: 1px solid #ddd; /* Add a border to the right side */
-        }
-        .left-navbar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-        }
-        .left-navbar a:hover {
-            background-color: #ddd;
-            color: black;
+        body {
+            background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         .main-content {
-            margin-left: 220px; /* Same as the width of the sidebar */
+            display: flex;
+            justify-content: center;
             padding: 20px;
-            margin-top: 170px; /* Further adjusted value */
+            margin-top: 20px;
+            width: 100%; /* Ensure it takes up the full width */
         }
         .form-container {
-            max-width: 600px;
-            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #fff;
+            width: 100%; /* Make the container take up the full width */
+            max-width: 600px; /* Ensure it doesn't grow too large on big screens */
+            display: flex;
+            flex-direction: column;
         }
         .form-container h1 {
             font-size: 2em;
@@ -56,7 +44,8 @@
         }
         .form-container input[type="text"],
         .form-container input[type="number"],
-        .form-container input[type="file"] {
+        .form-container input[type="file"],
+        .form-container select {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
@@ -77,12 +66,6 @@
         }
     </style>
 
-    <div class="left-navbar">
-        <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
-        <a href="{{ url_for('main.history_page') }}">History</a>
-        <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
-    </div>
-
     <div class="main-content">
         <div class="form-container">
             <h1>Add Pet</h1>
@@ -96,6 +79,9 @@
 
                 <label for="breed">Breed</label>
                 {{ form.breed }}
+
+                <label for="gender">Gender</label>
+                {{ form.gender }}
 
                 <label for="picture">Upload Picture</label>
                 {{ form.picture }}
