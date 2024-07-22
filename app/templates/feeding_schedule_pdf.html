@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feeding Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Feeding Schedule</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Pet</th>
+                <th>Type of Food</th>
+                <th>Feedings Per Day</th>
+                <th>Cups Per Meal</th>
+                <th>Feeding Times</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feeding in feedings %}
+            <tr>
+                <td>{{ feeding.pet.name }}</td>
+                <td>{{ feeding.food_type }}</td>
+                <td>{{ feeding.feedings_per_day }}</td>
+                <td>{{ feeding.food_amount }}</td>
+                <td>
+                    {% for time in feeding.feeding_times %}
+                        {{ time.strftime('%I:%M %p') }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
