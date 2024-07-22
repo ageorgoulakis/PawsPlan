@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Edit Feeding Schedule{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .main-content {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .feeding-form {
+        max-width: 800px; /* Adjusted to be slightly wider */
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .feeding-form h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf;
+    }
+    .feeding-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .feeding-form select,
+    .feeding-form input[type="text"],
+    .feeding-form input[type="number"],
+    .feeding-form input[type="time"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .feeding-times-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .feeding-times-container input[type="time"] {
+        flex: 1;
+        margin-right: 5px;
+        width: auto;
+        padding: 5px;
+    }
+    .feeding-times-container input[type="time"]:last-child {
+        margin-right: 0;
+    }
+    .feeding-form .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .feeding-form .btn-save:hover {
+        background-color: #5a92c6;
+    }
+</style>
+
+<div class="main-content">
+    <div class="feeding-form">
+        <h1>Edit Feeding Schedule</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <label for="pet">Choose Pet</label>
+            {{ form.pet }}
+
+            <label for="food_type">Type of Food</label>
+            {{ form.food_type }}
+
+            <label for="feedings_per_day">Feedings Per Day</label>
+            {{ form.feedings_per_day }}
+
+            <label for="food_amount">Cups Per Meal</label>
+            {{ form.food_amount }}
+
+            <label for="feeding_times">Feeding Times</label>
+            <div class="feeding-times-container">
+                {{ form.feeding_time_1(size=5) }}
+                {{ form.feeding_time_2(size=5) }}
+                {{ form.feeding_time_3(size=5) }}
+                {{ form.feeding_time_4(size=5) }}
+                {{ form.feeding_time_5(size=5) }}
+            </div>
+
+            <button type="submit" class="btn-save">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
