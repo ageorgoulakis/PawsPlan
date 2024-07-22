@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}Expense Management{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .main-content-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .main-content {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%; /* Make the container take up the full width */
+        max-width: 2500px; /* Ensure it doesn't grow too large on big screens */
+        display: flex;
+        flex-direction: column;
+    }
+    .expense-form {
+        width: 100%; /* Make the form as wide as the container */
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .expense-form h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf;
+    }
+    .expense-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .expense-form select,
+    .expense-form input[type="text"],
+    .expense-form input[type="number"],
+    .expense-form input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .expense-form .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .expense-form .btn-save:hover {
+        background-color: #5a92c6;
+    }
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .filter-form button {
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .filter-form button:hover {
+        background-color: #5a92c6;
+    }
+    .sort-box {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .sort-box .form-group {
+        display: flex;
+        gap: 10px;
+    }
+    .sort-box select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        line-height: 1.2;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        width: 200px;
+    }
+    .sort-box .btn-sort {
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100px;
+    }
+    .sort-box .btn-sort:hover {
+        background-color: #5a92c6;
+    }
+    .summary-box {
+        display: none;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        font-size: 1.2em;
+        color: #333;
+        position: relative;
+        height: 450px; /* Fixed height for the summary box */
+    }
+    #expenseChart {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        height: 350px; /* Adjusted height for the chart */
+    }
+    .total-expenses {
+        position: absolute;
+        bottom: 20px; /* Adjusted bottom position */
+        left: 20px;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+    }
+    .expense-table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .expense-table th, .expense-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+    .expense-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    .expense-table .actions {
+        display: flex;
+        gap: 5px;
+    }
+    .expense-table .actions button,
+    .expense-table .actions a {
+        padding: 5px 10px;
+        font-size: 1em;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+    }
+    .expense-table .actions .btn-edit {
+        background-color: #0056b3;
+        color: #fff;
+    }
+    .expense-table .actions .btn-delete {
+        background-color: #d9534f;
+        color: #fff;
+    }
+</style>
+
+<div class="main-content-container">
+    <div class="main-content">
+        <div class="expense-form">
+            <h1>Expense Management</h1>
+            <form method="post">
+                {{ form.hidden_tag() }}
+
+                <label for="pet">Choose Pet</label>
+                {{ form.pet }}
+
+                <label for="expense_type">Expense Type</label>
+                {{ form.expense_type }}
+
+                <label for="amount">Amount</label>
+                {{ form.amount }}
+
+                <label for="date">Date Paid</label>
+                {{ form.date }}
+
+                <button type="submit" class="btn-save">Save</button>
+            </form>
+        </div>
+
+        <div class="filter-form">
+            <h2>Expenses</h2>
+            <button type="button" class="btn btn-primary" onclick="toggleSortBox()">Filter</button>
+            <button type="button" class="btn btn-primary" onclick="toggleSummaryBox()">Summary</button>
+        </div>
+
+        <div class="summary-box" id="summaryBox">
+            <canvas id="expenseChart" width="400" height="400"></canvas>
+            <div class="total-expenses">
+                Total Expenses: ${{ total_expenses }}
+            </div>
+        </div>
+
+        <div class="sort-box" id="sortBox">
+            <form method="get" class="d-flex flex-column">
+                <div class="form-group">
+                    <select name="sort_pet" class="form-control mr-2">
+                        <option value="" selected>All Pets</option>
+                        {% for pet in pets %}
+                            <option value="{{ pet.id }}" {% if request.args.get('sort_pet') == pet.id|string %}selected{% endif %}>{{ pet.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="sort_expense_type" class="form-control mr-2">
+                        <option value="" selected>All Expense Types</option>
+                        {% for type in expense_types %}
+                            <option value="{{ type }}" {% if request.args.get('sort_expense_type') == type %}selected{% endif %}>{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="sort_amount" class="form-control mr-2">
+                        <option value="" selected>Select Sort Order</option>
+                        <option value="asc" {% if request.args.get('sort_amount') == 'asc' %}selected{% endif %}>Low to High</option>
+                        <option value="desc" {% if request.args.get('sort_amount') == 'desc' %}selected{% endif %}>High to Low</option>
+                    </select>
+                    <select name="sort_date" class="form-control mr-2">
+                        <option value="" selected>Select Sort Order</option>
+                        <option value="asc" {% if request.args.get('sort_date') == 'asc' %}selected{% endif %}>Past to Recent</option>
+                        <option value="desc" {% if request.args.get('sort_date') == 'desc' %}selected{% endif %}>Recent to Past</option>
+                    </select>
+                    <button type="submit" class="btn-sort">Sort</button>
+                </div>
+            </form>
+        </div>
+
+        {% if expenses %}
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Expense Type</th>
+                    <th>Amount</th>
+                    <th>Date Paid</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.pet.name }}</td>
+                    <td>{{ expense.expense_type }}</td>
+                    <td>${{ '%.2f' % expense.amount }}</td>
+                    <td>{{ expense.date.strftime('%B %d, %Y') }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('main.edit_expense', expense_id=expense.id) }}" class="btn-edit">Edit</a>
+                        <form method="POST" action="{{ url_for('main.delete_expense', expense_id=expense.id) }}" style="display:inline;">
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    function toggleSortBox() {
+        const sortBox = document.getElementById('sortBox');
+        sortBox.style.display = sortBox.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleSummaryBox() {
+        const summaryBox = document.getElementById('summaryBox');
+        summaryBox.style.display = summaryBox.style.display === 'none' ? 'block' : 'none';
+        if (summaryBox.style.display === 'block') {
+            renderChart();
+        }
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseData = {{ expense_summary | tojson }};
+        const labels = Object.keys(expenseData);
+        const data = Object.values(expenseData);
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40',
+                        '#66FF66',
+                        '#FF6666',
+                        '#6699FF',
+                        '#CC66FF',
+                        '#66FFCC',
+                        '#FFCC66',
+                        '#66CCFF',
+                        '#FF66CC',
+                        '#CCFF66',
+                        '#6666FF'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+</script>
+{% endblock %}
