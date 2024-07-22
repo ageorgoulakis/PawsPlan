@@ -62,3 +62,9 @@ def send_reminder_email(user_id, appointment_id):
                    f'Description: {appointment.description}'
         mail.send(msg)
 
+def send_notification_email(user, record):
+    msg = Message('Vaccine Reminder',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[user.email])
+    msg.body = f"Dear {user.username},\n\nThis is a reminder that your pet, {record.pet.name}, is due for their {record.vaccine_type} vaccine on {record.next_due_date.strftime('%Y-%m-%d')}. Please schedule an appointment with your vet.\n\nBest regards,\nThe PawsPlan Team"
+    mail.send(msg)
