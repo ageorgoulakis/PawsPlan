@@ -15,7 +15,7 @@
             color: black; /* Black button color */
         }
         .navbar-brand {
-            color: black; /* Change text color to white */
+            color: black; /* Change text color to black */
             font-size: 24px; /* Adjust font size */
             font-weight: bold; /* Make the text bold */
             text-decoration: none; /* Remove underline */
@@ -32,16 +32,26 @@
             height: 40px; /* Shorter height */
             display: flex;
             align-items: center;
-            justify-content: flex-end; /* Align to the right */
-            padding-right: 20px; /* Add some padding */
+            justify-content: center; /* Center the content */
             color: white; /* White text color */
+            position: relative;
+        }
+        .navbar-secondary .contact-text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center; /* Center the contact text */
+        }
+        .navbar-secondary .user-email {
+            color: white; /* Change user email color to white */
+            margin-left: auto; /* Push user email to the right */
         }
         .navbar-tertiary {
             background-color: #71a2cf; /* Blue color */
             display: flex;
             align-items: center; /* Center horizontally */
             justify-content: center; /* Center vertically */
-            color: rgb(255, 255, 255); /* Black text color */
+            color: rgb(255, 255, 255); /* White text color */
             border-bottom-left-radius: 15%; /* Add curved border to bottom left corner */
             border-bottom-right-radius: 15%; /* Add curved border to bottom right corner */
             box-shadow: 0px -5px 5px rgba(0, 0, 0, 0); /* Add shadow to create depth */
@@ -78,6 +88,11 @@
             width: auto; /* Maintain aspect ratio */
             margin-right: 0px; /* Add margin to separate from text */
         }
+        .navbar-nav .dropdown-menu {
+            max-width: 200px; /* Set maximum width for the dropdown menu */
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Prevent overflow */
+        }
     </style>
     <!-- Add FontAwesome for the paw icon -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -86,8 +101,17 @@
     {% block content_no_style %}
         <!-- Secondary Navbar -->
         <nav class="navbar navbar-expand-lg navbar-secondary">
-            <!-- Add email address -->
-            <div>pawsplan1@gmail.com</div>
+            <div class="contact-text">Contact us at pawsplan1@gmail.com</div>
+            {% if current_user.is_authenticated %}
+                <div class="nav-item dropdown ml-auto">
+                    <a class="nav-link dropdown-toggle user-email" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ current_user.email }}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="{{ url_for('main.logout') }}">Logout</a>
+                    </div>
+                </div>
+            {% endif %}
         </nav>
         <!-- Main Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom">
@@ -101,11 +125,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Features
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
+                                <a class="dropdown-item" href="{{ url_for('main.history_page') }}">History</a>
+                                <a class="dropdown-item" href="{{ url_for('main.appointments') }}">Vet Appointments</a>
+                                <a class="dropdown-item" href="{{ url_for('main.vaccine_tracking') }}">Vaccine Tracking</a>
+                                <a class="dropdown-item" href="{{ url_for('main.feeding_schedule') }}">Feeding Schedule</a>
+                                <a class="dropdown-item" href="{{ url_for('main.expense_management') }}">Expense Management</a>
+                            </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -151,4 +185,3 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
