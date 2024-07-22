@@ -1,4 +1,3 @@
-<!-- manage_pets.html -->
 {% extends "base.html" %}
 {% block title %}Pet Management{% endblock %}
 {% block hideable_navbar %}
@@ -10,42 +9,41 @@
 {% endblock %}
 {% block content %}
 <style>
-    .left-navbar {
-        width: 200px;
-        height: 100%;
-        position: fixed;
-        top: 150px;
-        left: 0;
-        background-color: #f8f9fa;
-        padding-top: 20px;
-        border-right: 1px solid #ddd;
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
     }
-    .left-navbar a {
-        padding: 10px 15px;
-        text-decoration: none;
-        font-size: 18px;
-        color: #333;
-        display: block;
-    }
-    .left-navbar a:hover {
-        background-color: #ddd;
-        color: black;
-    }
-    .main-content {
-        margin-left: 220px;
+    .main-content-container {
+        display: flex;
+        justify-content: center;
         padding: 20px;
         margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .main-content {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%; /* Make the container take up the full width */
+        max-width: 1200px; /* Ensure it doesn't grow too large on big screens */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center align the content */
     }
     .main-content-header {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 20px;
     }
     .main-content h1 {
         font-size: 3em;
         color: #71a2cf;
-        display: inline-block;
-        margin-right: 20px;
+        text-align: center; /* Center the text */
     }
     .main-content .btn-add-pet {
         font-size: 1.2em;
@@ -56,48 +54,60 @@
         border-radius: 5px;
         cursor: pointer;
         text-decoration: none;
-        margin-left: 40px;
+        margin-top: 40px;
     }
     .main-content .btn-add-pet:hover {
         background-color: #5a92c6;
     }
-    .pet-row {
-        display: flex;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid #ddd;
+    .pet-list {
         width: 100%;
-        max-width: 1000px;
-        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+    .pet-card {
         background-color: #f9f9f9;
+        border: 1px solid #ddd;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%; /* Full width for each card */
+        display: flex;
+        padding: 20px;
+        align-items: center;
     }
-    .pet-row img {
+    .pet-card img {
         width: 150px;
-        height: auto;
-        margin-right: 40px;
+        height: 150px; /* Adjusted height for images */
+        object-fit: cover;
+        border-radius: 10px;
+        margin-right: 20px;
     }
     .pet-info {
-        display: flex;
-        gap: 80px;
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     .pet-info span {
-        font-size: 1.5em;
+        font-size: 1.2em;
         color: #333;
+        margin-bottom: 5px;
+    }
+    .pet-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .btn-edit-pet, .btn-delete-pet, .btn-history {
         color: #fff;
         border: none;
         border-radius: 5px;
-        padding: 10px 20px;
+        padding: 5px 10px;
         cursor: pointer;
-        margin-top: 10px;
-        display: block;
-        width: 100%;
+        margin-top: 5px;
+        width: 100px;
         text-align: center;
-        margin-bottom: 10px; /* Add space between buttons */
     }
     .btn-edit-pet {
         background-color: #007bff;
@@ -119,35 +129,32 @@
     }
 </style>
 
-<div class="left-navbar">
-    <a href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
-    <a href="{{ url_for('main.history_page') }}">History</a>
-    <a href="{{ url_for('main.appointments') }}">Vet Appointments</a>
-</div>
-
-<div class="main-content">
-    <div class="main-content-header">
-        <h1>Pet Management</h1>
+<div class="main-content-container">
+    <div class="main-content">
+        <div class="main-content-header">
+            <h1>Pet Management</h1>
+        </div>
+        <div class="pet-list">
+            {% for pet in pets %}
+                <div class="pet-card">
+                    <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
+                    <div class="pet-info">
+                        <span>Name: {{ pet.name }}</span>
+                        <span>Age: {{ pet.age }}</span>
+                        <span>Breed: {{ pet.breed }}</span>
+                        <span>Gender: {{ pet.gender }}</span> <!-- Add gender here -->
+                    </div>
+                    <div class="pet-actions">
+                        <a href="{{ url_for('main.edit_pet', pet_id=pet.id) }}" class="btn-edit-pet">Edit</a>
+                        <a href="{{ url_for('main.pet_history', pet_id=pet.id) }}" class="btn-history">History</a>
+                        <form method="POST" action="{{ url_for('main.delete_pet', pet_id=pet.id) }}">
+                            <button type="submit" class="btn-delete-pet" onclick="return confirm('Are you sure you want to delete this pet?');">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
         <a href="{{ url_for('main.add_pet') }}" class="btn-add-pet">Add Pet</a>
-    </div>
-    <div class="pet-list">
-        {% for pet in pets %}
-            <div class="pet-row">
-                <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
-                <div class="pet-info">
-                    <span>{{ pet.name }}</span>
-                    <span>Age: {{ pet.age }}</span>
-                    <span>Breed: {{ pet.breed }}</span>
-                </div>
-                <div>
-                    <a href="{{ url_for('main.edit_pet', pet_id=pet.id) }}" class="btn-edit-pet">Edit</a>
-                    <a href="{{ url_for('main.pet_history', pet_id=pet.id) }}" class="btn-history">History</a>
-                    <form method="POST" action="{{ url_for('main.delete_pet', pet_id=pet.id) }}">
-                        <button type="submit" class="btn-delete-pet" onclick="return confirm('Are you sure you want to delete this pet?');">Delete</button>
-                    </form>
-                </div>
-            </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}
