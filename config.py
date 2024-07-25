@@ -13,3 +13,6 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
+    
+    # APScheduler Configuration
+    SCHEDULER_API_ENABLED = True

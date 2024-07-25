@@ -1,11 +1,106 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <div class="jumbotron">
-        <h1 class="display-4">Welcome to PawsPlan</h1>
-        <p class="lead">A comprehensive pet management tool to keep track of your pets' health and needs.</p>
-        <hr class="my-4">
-        <p>Sign up to start managing your pets today.</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('main.register') }}" role="button">Sign Up</a>
+<style>
+    .card-container {
+        width: 18rem;
+        margin: 40px; /* Increased margin for more spacing */
+        display: flex; /* Enable flexbox */
+        flex-direction: column; /* Arrange content vertically */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        text-align: center; /* Align text center */
+    }
+    .card {
+        height: 20rem;
+        background-color: white;
+        border: 2px solid #71a2cf;
+        border-radius: 10px;
+        overflow: hidden; /* Ensure text doesn't overflow */
+        display: flex; /* Enable flexbox */
+        flex-direction: column; /* Arrange content vertically */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+    }
+    .card-img-top {
+        width: 100%;
+        height: auto;
+        border-radius: 10px 10px 0 0;
+    }
+    .small-img {
+        max-width: 70%; /* Adjust the width as needed */
+    }
+    .card-text {
+        padding: 15px;
+    }
+    .mission-section {
+        font-family: 'Poppins', sans-serif;
+        text-align: center;
+        margin-top: 50px;
+        padding: 40px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        border: 2px solid #71a2cf;
+    }
+    .mission-title {
+        font-size: 3rem; /* Increased font size */
+        font-weight: bold;
+        color: #71a2cf;
+    }
+    .mission-text {
+        font-size: 1.5rem; /* Increased font size */
+        margin-top: 15px;
+        color: #333;
+    }
+</style>
+<div class="d-flex flex-column align-items-center mt-5">
+    <h1 class="text-center">Features For Every Pet</h1>
+    <p class="text-center lead">Start Managing Your Pets Now</p>
+    <div class="d-flex justify-content-center mt-3">
+        <div class="card-container">
+            <div class="card bg-light">
+                <img src="https://static.vecteezy.com/system/resources/previews/013/078/569/original/illustration-of-cute-colored-cat-cartoon-cat-image-in-format-suitable-for-children-s-book-design-elements-introduction-of-cats-to-children-books-or-posters-about-animal-free-png.png" class="card-img-top img-fluid" alt="Feature 1">
+            </div>
+            <div class="card-text">
+                <h5>Appointment Scheduling</h5>
+                <p>Schedule and manage your pet's veterinary appointments with ease</p>
+            </div>
+        </div>
+        <div class="card-container">
+            <div class="card bg-light">
+                <img src="https://static.vecteezy.com/system/resources/previews/028/760/838/original/cute-cartoon-dog-free-png.png" class="card-img-top img-fluid small-img" alt="Feature 2">
+            </div>
+            <div class="card-text">
+                <h5>Vaccination Tracker</h5>
+                <p>Keep track of your pet's vaccination schedule and upcoming due dates</p>
+            </div>
+        </div>
+        <div class="card-container">
+            <div class="card bg-light">
+                <img src="https://png.pngtree.com/png-clipart/20231118/original/pngtree-cute-kawaii-playful-calico-kitty-cat-cartoon-drawing-doodle-outline-png-image_13623580.png" class="card-img-top img-fluid" alt="Feature 3">
+            </div>
+            <div class="card-text">
+                <h5>Feeding Scheduler</h5>
+                <p>Plan and manage your pet's feeding times and meals</p>
+            </div>
+        </div>
+        <div class="card-container">
+            <div class="card bg-light">
+                <img src="https://i.pinimg.com/originals/54/bc/73/54bc730782500bd6ed4427f81256f3ea.png" class="card-img-top img-fluid small-img" alt="Feature 4">
+            </div>
+            <div class="card-text">
+                <h5>Expense Management</h5>
+                <p>Track and manage all your pet-related expenses in one place</p>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- Our Mission Section -->
+<div class="mission-section">
+    <h2 class="mission-title">Our Mission</h2>
+    <p class="mission-text">
+        To assist you in tracking your pet's healthcare needs seamlessly. With PawsPlan, you can effortlessly manage appointments, monitor health records, and ensure your furry friend receives the best care possible. Join us in keeping your pets healthy and happy!
+    </p>
+</div>
 {% endblock %}

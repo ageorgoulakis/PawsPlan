@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Edit Expense{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .main-content {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .expense-form {
+        width: 60%; /* Make the container less wide */
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .expense-form h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf;
+    }
+    .expense-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .expense-form select,
+    .expense-form input[type="number"],
+    .expense-form input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .expense-form .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .expense-form .btn-save:hover {
+        background-color: #5a92c6;
+    }
+</style>
+
+<div class="main-content">
+    <div class="expense-form">
+        <h1>Edit Expense</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <label for="pet">Choose Pet</label>
+            {{ form.pet }}
+
+            <label for="expense_type">Expense Type</label>
+            {{ form.expense_type }}
+
+            <label for="amount">Amount</label>
+            {{ form.amount }}
+
+            <label for="date">Date Paid</label>
+            {{ form.date }}
+
+            <button type="submit" class="btn-save">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

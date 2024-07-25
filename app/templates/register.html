@@ -1,32 +1,97 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
-{% block content %}
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <h2>Register</h2>
-            <form method="POST" action="{{ url_for('main.register') }}">
-                {{ form.hidden_tag() }}
-                <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
-                    {{ form.username(class="form-control form-control-lg") }}
-                </div>
-                <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    {{ form.email(class="form-control form-control-lg") }}
-                </div>
-                <div class="form-group">
-                    {{ form.password.label(class="form-control-label") }}
-                    {{ form.password(class="form-control form-control-lg") }}
-                </div>
-                <div class="form-group">
-                    {{ form.confirm_password.label(class="form-control-label") }}
-                    {{ form.confirm_password(class="form-control form-control-lg") }}
-                </div>
-                <div class="form-group">
-                    {{ form.submit(class="btn btn-primary btn-lg") }}
-                </div>
-            </form>
-            <p class="mt-3">After registering, you will receive an email to verify your account.</p>
+{% block content_no_style %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+    }
+    body {
+        background: linear-gradient(to bottom, #ffff, #71a2cf);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+    }
+    .logo-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+    .logo {
+        text-decoration: none;
+        color: black;
+    }
+    .logo img {
+        height: 50px; /* Adjust the height as needed */
+        width: auto; /* Maintain aspect ratio */
+        vertical-align: middle;
+    }
+    .register-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px; /* Adjusted max-width */
+        width: 100%;
+    }
+    h2 {
+        color: #71a2cf;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .btn-primary {
+        background-color: #71a2cf;
+        border: none;
+        width: 100%;
+    }
+    .btn-primary:hover {
+        background-color: #5a92b8;
+    }
+    .mt-3 {
+        margin-top: 1rem !important;
+    }
+</style>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+<div class="logo-container" onclick="goBack()">
+    <a href="#" class="logo">
+        <img src="https://www.edsaugusta.com/wp-content/uploads/2024/02/Paw-Print-Light-Blue-Transparent-01.png" alt="PawsPlan Logo">
+        PawsPlan
+    </a>
+</div>
+<div class="register-container">
+    <h2>Register To PawsPlan</h2>
+    <form method="POST" action="{{ url_for('main.register') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.username.label(class="form-control-label") }}
+            {{ form.username(class="form-control form-control-lg") }}
         </div>
-    </div>
+        <div class="form-group">
+            {{ form.email.label(class="form-control-label") }}
+            {{ form.email(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-control-label") }}
+            {{ form.password(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.confirm_password.label(class="form-control-label") }}
+            {{ form.confirm_password(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary btn-lg") }}
+        </div>
+    </form>
+    <p class="mt-3">After registering, you will receive an email to verify your account.</p>
+</div>
 {% endblock %}

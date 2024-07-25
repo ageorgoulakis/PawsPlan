@@ -1,9 +1,80 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
-{% block content %}
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <h2>Login</h2>
+{% block content_no_style %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+    }
+    body {
+        background: linear-gradient(to bottom, #ffff, #71a2cf);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+    }
+    .logo-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+    .logo {
+        text-decoration: none;
+        color: black;
+    }
+    .logo img {
+        height: 50px; /* Adjust the height as needed */
+        width: auto; /* Maintain aspect ratio */
+        vertical-align: middle;
+    }
+    .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+    }
+    h2 {
+        color: #71a2cf;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-control-lg {
+        width: 100%; /* Adjust the width as needed */
+    }
+    .btn-primary {
+        background-color: #71a2cf;
+        border: none;
+        width: 100%;
+    }
+    .btn-primary:hover {
+        background-color: #5a92b8;
+    }
+    .form-check-label {
+        margin-left: 5px;
+    }
+</style>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+<div class="logo-container" onclick="goBack()">
+    <a href="#" class="logo">
+        <img src="https://www.edsaugusta.com/wp-content/uploads/2024/02/Paw-Print-Light-Blue-Transparent-01.png" alt="PawsPlan Logo">
+        PawsPlan
+    </a>
+</div>
+<div class="container">
+    <div class="row justify-content-center"> <!-- Adjusted class to justify-content-center -->
+        <div class="col-md-8"> <!-- Adjusted column size to 8 -->
+            <h2>Login to PawsPlan</h2>
             <form method="POST" action="{{ url_for('main.login') }}">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
@@ -24,4 +95,6 @@
             </form>
         </div>
     </div>
+</div>
 {% endblock %}
+

@@ -1,0 +1,112 @@
+<!-- history_page.html -->
+{% extends "base.html" %}
+{% block title %}History Page{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .main-content-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .main-content {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%; /* Make the container take up the full width */
+        max-width: 2500px; /* Ensure it doesn't grow too large on big screens */
+        display: flex;
+        flex-direction: column;
+    }
+    .history-container {
+        width: 100%; /* Make the container take up the full width */
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .history-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf; /* Light blue color */
+    }
+    .history-events {
+        margin-top: 40px;
+    }
+    .history-event {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .history-event h4 {
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .btn-edit-history {
+        background-color: #28a745; /* Light green color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-edit-history:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+</style>
+
+<div class="main-content-container">
+    <div class="main-content">
+        <div class="history-container">
+            <h1>History Page</h1>
+            <form method="post" id="pet-select-form">
+                <div class="form-group">
+                    <label for="pet">Select Pet</label>
+                    <select name="pet" id="pet" class="form-control" onchange="document.getElementById('pet-select-form').submit();">
+                        <option value="" disabled selected>Select a pet</option>
+                        {% for pet in pets %}
+                            <option value="{{ pet.id }}" {% if selected_pet and selected_pet.id == pet.id %}selected{% endif %}>{{ pet.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            <div class="history-events">
+                {% if selected_pet %}
+                    <h2>{{ selected_pet.name }}'s Medical History</h2>
+                    {% for event in history_events %}
+                        <div class="history-event">
+                            <div>
+                                <h4>{{ event.event_type }} on {{ event.formatted_date }} at {{ event.formatted_time }}</h4>
+                                <p>{{ event.description }}</p>
+                            </div>
+                            <div>
+                                <a href="{{ url_for('main.edit_pet_history', pet_id=selected_pet.id, history_id=event.id) }}" class="btn-edit-history">Edit</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

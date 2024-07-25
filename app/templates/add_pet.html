@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Add Pet{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+    <style>
+        body {
+            background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .main-content {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%; /* Ensure it takes up the full width */
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%; /* Make the container take up the full width */
+            max-width: 600px; /* Ensure it doesn't grow too large on big screens */
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #71a2cf; /* Light blue color */
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="file"],
+        .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container .btn-save {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            background-color: #71a2cf; /* Light blue color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container .btn-save:hover {
+            background-color: #5a92c6; /* Darker blue */
+        }
+    </style>
+
+    <div class="main-content">
+        <div class="form-container">
+            <h1>Add Pet</h1>
+            <form method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <label for="name">Pet Name</label>
+                {{ form.name }}
+                
+                <label for="age">Age</label>
+                {{ form.age }}
+
+                <label for="breed">Breed</label>
+                {{ form.breed }}
+
+                <label for="gender">Gender</label>
+                {{ form.gender }}
+
+                <label for="picture">Upload Picture</label>
+                {{ form.picture }}
+
+                <button type="submit" class="btn-save">Save Pet</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
