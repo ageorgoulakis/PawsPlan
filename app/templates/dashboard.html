@@ -18,34 +18,41 @@
     }
     .main-content-container {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         padding: 20px;
         margin-top: 20px;
-        width: 100%; /* Ensure it takes up the full width */
+        width: 100%;
     }
     .main-content {
         background-color: white;
         border-radius: 10px;
         padding: 20px;
-        width: 100%; /* Make the container take up the full width */
-        max-width: 2500px; /* Ensure it doesn't grow too large on big screens */
+        width: 100%;
+        max-width: 1400px;
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
     .section {
         background-color: white;
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 40px;
-    }
-    .section h1,
-    .section h2 {
-        font-size: 3em;
-        color: #71a2cf;
-        text-align: center; /* Center the text */
+        width: 100%;
     }
     .section h1 {
-        margin-bottom: 20px;
+        font-size: 3em;
+        color: #71a2cf;
+        text-align: center;
+    }
+    .section h2 {
+        font-size: 2em; /* Adjusted font size */
+        color: #71a2cf;
+        text-align: center;
+    }
+    .header-color {
+        color: #71a2cf; /* Same color as other headers */
     }
     .card-container {
         display: flex;
@@ -54,7 +61,8 @@
         justify-content: center;
     }
     .card {
-        width: calc(33.33% - 20px); /* Fixed width for 3 cards per row, accounting for gap */
+        width: calc(33.33% - 20px); /* Adjusted width for horizontal layout */
+        max-width: 400px;
         border: 1px solid #ddd;
         border-radius: 5px;
         overflow: hidden;
@@ -65,11 +73,12 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center; /* Center text inside cards */
     }
     .card img {
         width: 100%;
-        height: 300px; /* Increased height for images */
-        object-fit: cover; /* Ensure images cover the entire area */
+        height: auto;
+        object-fit: cover;
         border-bottom: 1px solid #ddd;
     }
     .card-body {
@@ -91,7 +100,7 @@
         color: #333;
     }
     .upcoming {
-        font-size: 2.5em; /* Increase font size */
+        font-size: 2.5em;
         color: #71a2cf;
         margin-top: 60px;
     }
@@ -101,93 +110,149 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
-        font-size: 1.2em; /* Increase font size */
+        font-size: 1.2em;
         margin-bottom: 10px;
         color: #333;
     }
     .appointment-card {
-        width: calc(33.33% - 20px); /* Make appointment cards less wide */
-        height: auto; /* Adjust height as needed */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    .additional-info-container {
-        display: flex;
-        justify-content: center;
-        gap: 40px;
-        margin-top: 40px;
-    }
-    .additional-info-card {
-        width: calc(50% - 20px); /* Fixed width for 2 cards per row, accounting for gap */
+        width: 100%;
+        max-width: 400px;
         border: 1px solid #ddd;
         border-radius: 5px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         background-color: #fff;
         padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .layout-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 20px; /* Add gap between columns */
+    }
+    .column {
         display: flex;
         flex-direction: column;
         align-items: center;
     }
+    .column-left {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .column-right {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .additional-info-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .additional-info-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 800px; /* Ensures it aligns with the "Your Pets" section */
+    }
+    .additional-info-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .additional-info-card-inner {
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
 </style>
 
 <div class="main-content-container">
-    <div class="main-content">
-        <div class="section">
-            <h1>Your Pets</h1>
-            <div class="card-container">
-                {% for pet in pets %}
-                    <div class="card">
-                        <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ pet.name }}</h5>
-                            <p class="card-text">Age: {{ pet.age }}</p>
-                            <p class="card-text">Breed: {{ pet.breed }}</p>
-                            <p class="card-text">Gender: {{ pet.gender }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="section">
-            <h2>Upcoming Appointments</h2>
-            <div class="card-container">
-                {% for appointment in appointments %}
-                    <div class="card appointment-card">
-                        <div class="card-body">
-                            <div class="appointment-info">
-                                <span><strong>Appointment -</strong></span>
-                                <span>{{ appointment.date.strftime('%A, %B %d, %Y') }}</span>
-                                <span>at</span>
-                                <span>{{ appointment.time.strftime('%I:%M %p') }}</span>
+    <div class="layout-container">
+        <div class="column column-left">
+            <div class="section">
+                <h1>Your Pets</h1>
+                <div class="card-container">
+                    {% for pet in pets %}
+                        <div class="card">
+                            <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ pet.name }}</h5>
+                                <p class="card-text">Age: {{ pet.age }}</p>
+                                <p class="card-text">Breed: {{ pet.breed }}</p>
+                                <p class="card-text">Gender: {{ pet.gender }}</p>
                             </div>
-                            <p class="card-text">Pet: {{ appointment.pet.name }}</p>
-                            <p class="card-text">Veterinarian: {{ appointment.vet_name }}</p>
-                            <p class="card-text">{{ appointment.description }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="additional-info-wrapper">
+                <div class="additional-info-container">
+                    <div class="additional-info-card">
+                        <h2 class="header-color">Next Vaccine</h2>
+                        <div class="additional-info-card-inner">
+                            {% if closest_vaccine_record %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ closest_vaccine_record.pet.name }}</h5>
+                                    <p class="card-text">Vaccine Type: {{ closest_vaccine_record.vaccine_type }}</p>
+                                    <p class="card-text">Next Due Date: {{ closest_vaccine_record.next_due_date.strftime('%B %d, %Y') }}</p>
+                                </div>
+                            {% else %}
+                                <p>No upcoming vaccinations.</p>
+                            {% endif %}
                         </div>
                     </div>
-                {% endfor %}
+                    <div class="additional-info-card">
+                        <h2 class="header-color">Expenses</h2>
+                        <div class="additional-info-card-inner">
+                            <div class="card-body">
+                                <p class="card-text">Total Expenses: ${{ '%.2f' % total_expenses }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="additional-info-container">
-            <div class="additional-info-card">
-                <h2>Upcoming Vaccination</h2>
-                {% if closest_vaccine_record %}
-                    <div class="card-body">
-                        <h5 class="card-title">Pet Name: {{ closest_vaccine_record.pet.name }}</h5>
-                        <p class="card-text">Vaccine Type: {{ closest_vaccine_record.vaccine_type }}</p>
-                        <p class="card-text">Next Due Date: {{ closest_vaccine_record.next_due_date.strftime('%B %d, %Y') }}</p>
-                    </div>
-                {% else %}
-                    <p>No upcoming vaccinations.</p>
-                {% endif %}
-            </div>
-            <div class="additional-info-card">
-                <h2>Expense Summary</h2>
-                <div class="card-body">
-                    <p class="card-text">Total Expenses: ${{ '%.2f' % total_expenses }}</p>
+        <div class="column column-right">
+            <div class="section">
+                <h2 class="header-color">Appointments</h2>
+                <div class="card-container">
+                    {% for appointment in appointments %}
+                        <div class="appointment-card">
+                            <div class="card-body">
+                                <div class="appointment-info">
+                                    <span><strong>Appointment -</strong></span>
+                                    <span>{{ appointment.date.strftime('%A, %B %d, %Y') }}</span>
+                                    <span>at</span>
+                                    <span>{{ appointment.time.strftime('%I:%M %p') }}</span>
+                                </div>
+                                <p class="card-text">Pet: {{ appointment.pet.name }}</p>
+                                <p class="card-text">Veterinarian: {{ appointment.vet_name }}</p>
+                                <p class="card-text">{{ appointment.description }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
