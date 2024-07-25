@@ -12,11 +12,13 @@ import io
 
 bp = Blueprint('main', __name__)
 
+# Home route, displays the home page
 @bp.route("/")
 @bp.route("/home")
 def home():
     return render_template('index.html')
 
+# Registration route, handles user registration
 @bp.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -32,6 +34,7 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
+# Login route, handles user login
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -51,15 +54,16 @@ def login():
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
+# Logout route, logs out the current user
 @bp.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('main.home'))
 
+# Dashboard route, displays the user dashboard with pets, appointments, and expenses
 @bp.route("/dashboard")
 @login_required
 def dashboard():
-    # Check for due appointments and move them to history
     now = datetime.now()
     due_appointments = VetAppointment.query.filter(
         (VetAppointment.date < now.date()) | 
@@ -77,17 +81,12 @@ def dashboard():
         db.session.delete(appointment)
     db.session.commit()
 
-    # Fetch the updated list of pets and appointments
     pets = Pet.query.filter_by(user_id=current_user.id).all()
     appointments = VetAppointment.query.join(Pet).filter(Pet.user_id == current_user.id).all()
-
-    # Fetch the closest upcoming vaccination record
     closest_vaccine_record = VaccineRecord.query.join(Pet).filter(
         Pet.user_id == current_user.id,
         VaccineRecord.next_due_date >= date.today()
     ).order_by(VaccineRecord.next_due_date).first()
-
-    # Calculate the total expenses
     total_expenses = db.session.query(db.func.sum(Expense.amount)).join(Pet).filter(Pet.user_id == current_user.id).scalar() or 0.0
 
     return render_template(
@@ -99,7 +98,7 @@ def dashboard():
         total_expenses=total_expenses
     )
 
-
+# Email confirmation route, confirms user email address
 @bp.route("/confirm_email/<token>")
 def confirm_email(token):
     email = confirm_verification_token(token)
@@ -115,11 +114,11 @@ def confirm_email(token):
         flash('The confirmation link is invalid or has expired.', 'danger')
     return redirect(url_for('main.login'))
 
+# Route to delete all users, for testing or administrative purposes
 @bp.route("/delete_all_users")
 def delete_all_users():
     users = User.query.all()
     for user in users:
-        # Delete feeding schedules associated with the user's pets
         pets = Pet.query.filter_by(user_id=user.id).all()
         for pet in pets:
             FeedingSchedule.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
@@ -132,14 +131,14 @@ def delete_all_users():
     db.session.commit()
     return "All users, their pets, and their histories have been deleted.", 200
 
-# Route for managing pets
+# Route for managing pets, displays the pet management page
 @bp.route("/manage_pets")
 @login_required
 def manage_pets():
     pets = Pet.query.filter_by(user_id=current_user.id).all()
     return render_template('manage_pets.html', title='Pet Management', pets=pets)
 
-# Route for adding a pet
+# Route for adding a pet, handles the addition of a new pet
 @bp.route("/add_pet", methods=['GET', 'POST'])
 @login_required
 def add_pet():
@@ -147,12 +146,12 @@ def add_pet():
     if form.validate_on_submit():
         picture_file = secure_filename(form.picture.data.filename)
         picture_path = os.path.join(current_app.root_path, 'static/pet_pics', picture_file)
-        form.picture.data.save(picture_path)  # Save the file to the static/pet_pics directory
+        form.picture.data.save(picture_path)
         pet = Pet(
             name=form.name.data, 
             age=form.age.data, 
             breed=form.breed.data, 
-            gender=form.gender.data,  # Handle the gender field
+            gender=form.gender.data,
             picture=picture_file, 
             user_id=current_user.id
         )
@@ -162,7 +161,7 @@ def add_pet():
         return redirect(url_for('main.dashboard'))
     return render_template('add_pet.html', title='Add Pet', form=form)
 
-# Route for editing a pet
+# Route for editing a pet, handles the editing of pet details
 @bp.route("/edit_pet/<int:pet_id>", methods=['GET', 'POST'])
 @login_required
 def edit_pet(pet_id):
@@ -176,7 +175,7 @@ def edit_pet(pet_id):
         if form.picture.data:
             picture_file = secure_filename(form.picture.data.filename)
             picture_path = os.path.join(current_app.root_path, 'static/pet_pics', picture_file)
-            form.picture.data.save(picture_path)  # Save the file to the static/pet_pics directory
+            form.picture.data.save(picture_path)
             pet.picture = picture_file
 
         pet.name = form.name.data
@@ -190,8 +189,7 @@ def edit_pet(pet_id):
 
     return render_template('edit_pet.html', title='Edit Pet', form=form)
 
-
-# Route to delete a pet
+# Route to delete a pet, handles the deletion of a pet and its associated data
 @bp.route("/delete_pet/<int:pet_id>", methods=['POST'])
 @login_required
 def delete_pet(pet_id):
@@ -200,25 +198,18 @@ def delete_pet(pet_id):
         flash('You do not have permission to delete this pet.', 'danger')
         return redirect(url_for('main.manage_pets'))
 
-    # Delete all history associated with the pet
     PetHistory.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
-    # Delete all appointments associated with the pet
     VetAppointment.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
-    # Delete vaccine records associated with the pet
     VaccineRecord.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
-    # Delete feeding schedules associated with the pet
     FeedingSchedule.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
-    # Delete expenses associated with the pet
     Expense.query.filter_by(pet_id=pet.id).delete(synchronize_session=False)
 
-    # Now delete the pet
     db.session.delete(pet)
     db.session.commit()
     flash('The pet and its history have been deleted!', 'success')
     return redirect(url_for('main.manage_pets'))
 
-
-# Route for viewing and adding pet history
+# Route for viewing and adding pet history, handles displaying and adding history events
 @bp.route("/pet/<int:pet_id>/history", methods=['GET', 'POST'])
 @login_required
 def pet_history(pet_id):
@@ -241,14 +232,13 @@ def pet_history(pet_id):
         return redirect(url_for('main.pet_history', pet_id=pet.id))
     
     history_events = PetHistory.query.filter_by(pet_id=pet.id).all()
-    # Format date and time
     for event in history_events:
         event.formatted_date = event.event_date.strftime('%A, %B %d, %Y')
         event.formatted_time = event.event_time.strftime('%I:%M %p')
     
     return render_template('history.html', pet=pet, form=form, history_events=history_events)
 
-# New route for editing pet history
+# Route for editing pet history, handles the editing of history events
 @bp.route("/pet/<int:pet_id>/history/<int:history_id>/edit", methods=['GET', 'POST'])
 @login_required
 def edit_pet_history(pet_id, history_id):
@@ -274,6 +264,7 @@ def edit_pet_history(pet_id, history_id):
     
     return render_template('edit_history.html', pet=pet, form=form, history_event=history_event)
 
+# Route for viewing history page, handles displaying history for a selected pet
 @bp.route("/history_page", methods=['GET', 'POST'])
 @login_required
 def history_page():
@@ -287,13 +278,13 @@ def history_page():
             selected_pet = Pet.query.get(int(pet_id))
             if selected_pet and selected_pet.owner == current_user:
                 history_events = PetHistory.query.filter_by(pet_id=selected_pet.id).all()
-                # Format date and time
                 for event in history_events:
                     event.formatted_date = event.event_date.strftime('%A, %B %d, %Y')
                     event.formatted_time = event.event_time.strftime('%I:%M %p')
 
     return render_template('history_page.html', pets=pets, selected_pet=selected_pet, history_events=history_events)
 
+# Route for managing appointments, handles adding new vet appointments
 @bp.route("/appointments", methods=['GET', 'POST'])
 @login_required
 def appointments():
@@ -311,9 +302,8 @@ def appointments():
         db.session.commit()
         send_appointment_email(current_user, appointment)
 
-        # Schedule reminder email 24 hours before the appointment
         reminder_time = datetime.combine(appointment.date, appointment.time) - timedelta(hours=24)
-        print(f"Scheduling reminder for {reminder_time}")  # Add logging
+        print(f"Scheduling reminder for {reminder_time}")
         scheduler.add_job(
             func=send_reminder_email,
             args=[current_user.id, appointment.id],
@@ -327,14 +317,13 @@ def appointments():
         return redirect(url_for('main.dashboard'))
     return render_template('appointments.html', form=form)
 
+# Route for vaccine tracking, handles displaying and adding vaccine records
 @bp.route('/vaccine_tracking', methods=['GET', 'POST'])
 @login_required
 def vaccine_tracking():
     form = VaccineTrackingForm()
     pets = Pet.query.filter_by(user_id=current_user.id).all()
-
     pet_id = request.args.get('pet')
-    
     records_query = VaccineRecord.query.join(Pet).filter(Pet.user_id == current_user.id)
 
     if pet_id:
@@ -348,7 +337,7 @@ def vaccine_tracking():
             vaccine_type=form.vaccine_type.data,
             date_administered=form.date_administered.data,
             next_due_date=form.next_due_date.data,
-            notification_sent=False  # Set default to False
+            notification_sent=False
         )
         db.session.add(vaccine_record)
         db.session.commit()
@@ -357,7 +346,7 @@ def vaccine_tracking():
 
     return render_template('vaccine_tracking.html', form=form, records=records, pets=pets)
 
-
+# Route for editing a vaccine record, handles the editing of vaccine records
 @bp.route("/edit_vaccine/<int:vaccine_id>", methods=['GET', 'POST'])
 @login_required
 def edit_vaccine(vaccine_id):
@@ -377,6 +366,7 @@ def edit_vaccine(vaccine_id):
         form.next_due_date.data = vaccine_record.next_due_date
     return render_template('edit_vaccine.html', form=form)
 
+# Route for deleting a vaccine record, handles the deletion of vaccine records
 @bp.route("/delete_vaccine/<int:vaccine_id>", methods=['POST'])
 @login_required
 def delete_vaccine(vaccine_id):
@@ -386,7 +376,7 @@ def delete_vaccine(vaccine_id):
     flash('Vaccine record deleted successfully.', 'success')
     return redirect(url_for('main.vaccine_tracking'))
 
-# Feeding Schedule Routes
+# Route for managing feeding schedules, handles displaying and adding feeding schedules
 @bp.route('/feeding_schedule', methods=['GET', 'POST'])
 @login_required
 def feeding_schedule():
@@ -409,6 +399,7 @@ def feeding_schedule():
     feedings = FeedingSchedule.query.join(Pet).filter(Pet.user_id == current_user.id).all()
     return render_template('feeding_schedule.html', form=form, feedings=feedings)
 
+# Route for editing a feeding schedule, handles the editing of feeding schedules
 @bp.route('/edit_feeding_schedule/<int:feeding_id>', methods=['GET', 'POST'])
 @login_required
 def edit_feeding_schedule(feeding_id):
@@ -423,7 +414,7 @@ def edit_feeding_schedule(feeding_id):
         feeding_times = [time for time in feeding_times if time]
         feeding_schedule.feeding_times = feeding_times
         db.session.commit()
-        flash('Feeding schedule updated successfully.', 'success')
+        flash('Feeding schedule updated successfully!', 'success')
         return redirect(url_for('main.feeding_schedule'))
     elif request.method == 'GET':
         form.pet.data = feeding_schedule.pet_id
@@ -443,6 +434,7 @@ def edit_feeding_schedule(feeding_id):
             form.feeding_time_5.data = feeding_times[4]
     return render_template('edit_feeding_schedule.html', form=form, feeding_id=feeding_id)
 
+# Route for deleting a feeding schedule, handles the deletion of feeding schedules
 @bp.route('/delete_feeding_schedule/<int:feeding_id>', methods=['POST'])
 @login_required
 def delete_feeding_schedule(feeding_id):
@@ -452,18 +444,13 @@ def delete_feeding_schedule(feeding_id):
     flash('Feeding schedule deleted successfully.', 'success')
     return redirect(url_for('main.feeding_schedule'))
 
+# Route for downloading the feeding schedule as a PDF
 @bp.route('/feeding_schedule_pdf')
 @login_required
 def feeding_schedule_pdf():
     feedings = FeedingSchedule.query.join(Pet).filter(Pet.user_id == current_user.id).all()
-
-    # Render the HTML template with feeding schedule data
     html = render_template('feeding_schedule_pdf.html', feedings=feedings)
-
-    # Convert the HTML to a PDF
     pdf = HTML(string=html).write_pdf()
-
-    # Send the PDF as a file download
     return send_file(
         io.BytesIO(pdf),
         mimetype='application/pdf',
@@ -471,12 +458,13 @@ def feeding_schedule_pdf():
         download_name='feeding_schedule.pdf'
     )
 
+# Route for managing expenses, handles displaying and adding expenses
 @bp.route('/expense_management', methods=['GET', 'POST'])
 @login_required
 def expense_management():
     form = ExpenseForm()
     pets = Pet.query.filter_by(user_id=current_user.id).all()
-    expense_types = ['Appointments','Vaccination','Food', 'Vet', 'Toy and Entertainment','Training','Insurance','Pet Sitting','Travel','Registration','Accessories','Miscellaneous Supplies','Dietary Supplements','Subscriptions','Events','Other']
+    expense_types = ['Appointments','Vaccination','Food','Medication','Grooming','Toy and Entertainment','Training','Insurance','Pet Sitting','Travel','Registration','Accessories','Miscellaneous Supplies','Dietary Supplements','Subscriptions','Events','Other']
 
     if form.validate_on_submit():
         expense = Expense(
@@ -515,7 +503,6 @@ def expense_management():
     expenses = expenses_query.all()
     total_expenses = sum(expense.amount for expense in expenses)
 
-    # Calculate the summary of expenses by type
     expense_summary = {expense_type: 0 for expense_type in expense_types}
     for expense in expenses:
         if expense.expense_type in expense_summary:
@@ -537,9 +524,7 @@ def expense_management():
         sort_date=sort_date
     )
 
-
-
-
+# Route for editing an expense, handles the editing of expense records
 @bp.route("/expense_management/edit/<int:expense_id>", methods=['GET', 'POST'])
 @login_required
 def edit_expense(expense_id):
@@ -563,6 +548,7 @@ def edit_expense(expense_id):
 
     return render_template('edit_expense.html', title='Edit Expense', form=form, expense=expense)
 
+# Route for deleting an expense, handles the deletion of expense records
 @bp.route("/expense_management/delete/<int:expense_id>", methods=['POST'])
 @login_required
 def delete_expense(expense_id):
@@ -571,4 +557,3 @@ def delete_expense(expense_id):
     db.session.commit()
     flash('Expense has been deleted!', 'success')
     return redirect(url_for('main.expense_management'))
-
