@@ -25,6 +25,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
     
+    # Initialize Flask extensions
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -35,9 +36,11 @@ def create_app():
     from app.utils import ensure_directory_exists
     ensure_directory_exists(os.path.join(app.root_path, 'static/pet_pics'))
 
+    # Register the main blueprint
     from app.routes import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Start the scheduler if it's not already running
     if not scheduler.running:
         scheduler.start()
     
@@ -46,9 +49,9 @@ def create_app():
     if existing_job:
         scheduler.remove_job('check_vaccine_due_dates')
     
-    # Schedule the task
+    # Schedule the task to check vaccine due dates every minute
     from app.tasks import check_vaccine_due_dates
-    scheduler.add_job(id='check_vaccine_due_dates', func=check_vaccine_due_dates, trigger='interval', minutes=1)  # Run every minute for testing
+    scheduler.add_job(id='check_vaccine_due_dates', func=check_vaccine_due_dates, trigger='interval', minutes=1)
 
     return app
 
