@@ -1,53 +1,252 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Feeding Schedule</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>Feeding Schedule</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Pet</th>
-                <th>Type of Food</th>
-                <th>Feedings Per Day</th>
-                <th>Cups Per Meal</th>
-                <th>Feeding Times</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for feeding in feedings %}
-            <tr>
-                <td>{{ feeding.pet.name }}</td>
-                <td>{{ feeding.food_type }}</td>
-                <td>{{ feeding.feedings_per_day }}</td>
-                <td>{{ feeding.food_amount }}</td>
-                <td>
-                    {% for time in feeding.feeding_times %}
-                        {{ time.strftime('%I:%M %p') }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Feeding Schedule{% endblock %}
+{% block hideable_navbar %}
+<style>
+    .navbar-tertiary {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://assets.wfcdn.com/im/81456976/compr-r85/1178/117858037/fabric.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .main-content-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%; /* Ensure it takes up the full width */
+    }
+    .main-content {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%; /* Make the container take up the full width */
+        max-width: 2500px; /* Ensure it doesn't grow too large on big screens */
+        display: flex;
+        flex-direction: column;
+    }
+    .feeding-form {
+        width: 100%; /* Make the form as wide as the container */
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .feeding-form h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #71a2cf;
+        text-align: center; /* Center the heading */
+    }
+    .feeding-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .feeding-form select,
+    .feeding-form input[type="text"],
+    .feeding-form input[type="number"],
+    .feeding-form input[type="time"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .feeding-times-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .feeding-times-container input[type="time"] {
+        flex: 1;
+        margin-right: 5px;
+        width: auto;
+        padding: 5px;
+    }
+    .feeding-times-container input[type="time"]:last-child {
+        margin-right: 0;
+    }
+    .feeding-form .btn-container {
+        display: flex;
+        justify-content: center; /* Center the button container */
+        gap: 10px;
+    }
+    .feeding-form .btn-save {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .feeding-form .btn-save:hover {
+        background-color: #5a92c6;
+    }
+    .feeding-form .btn-download {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf; /* Light blue color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    .feeding-form .btn-download:hover {
+        background-color: #5a92c6;
+    }
+    .divider {
+        margin: 20px 0;
+        border-top: 5px solid #ddd; /* Thick line */
+    }
+    .feeding-table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .feeding-table th, .feeding-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+    .feeding-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    .feeding-table .actions {
+        display: flex;
+        gap: 5px;
+    }
+    .feeding-table .actions button,
+    .feeding-table .actions a {
+        padding: 5px 10px;
+        font-size: 1em;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+    }
+    .feeding-table .actions .btn-edit {
+        background-color: #0056b3;
+        color: #fff;
+    }
+    .feeding-table .actions .btn-delete {
+        background-color: #d9534f;
+        color: #fff;
+    }
+    .feeding-heading {
+        text-align: center;
+        font-size: 2em;
+        color: #71a2cf; /* Match the color */
+        margin-top: 20px;
+    }
+    .btn-container-bottom {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .btn-pdf {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf; /* Light blue color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-pdf:hover {
+        background-color: #5a92c6;
+    }
+</style>
+
+<div class="main-content-container">
+    <div class="main-content">
+        <div class="feeding-form">
+            <h1>Feeding Schedule</h1>
+            <form method="post">
+                {{ form.hidden_tag() }}
+
+                <label for="pet">Choose Pet</label>
+                {{ form.pet }}
+
+                <label for="food_type">Type of Food</label>
+                {{ form.food_type }}
+
+                <label for="feedings_per_day">Feedings Per Day</label>
+                {{ form.feedings_per_day }}
+
+                <label for="food_amount">Cups Per Meal</label>
+                {{ form.food_amount }}
+
+                <label for="feeding_times">Feeding Times</label>
+                <div class="feeding-times-container">
+                    {{ form.feeding_time_1(size=5) }}
+                    {{ form.feeding_time_2(size=5) }}
+                    {{ form.feeding_time_3(size=5) }}
+                    {{ form.feeding_time_4(size=5) }}
+                    {{ form.feeding_time_5(size=5) }}
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="divider"></div> <!-- Added thick line -->
+
+        {% if feedings %}
+        <h2 class="feeding-heading">Feeding Schedule</h2>
+        <div class="btn-container-bottom">
+            <a href="{{ url_for('main.feeding_schedule_pdf') }}" class="btn-pdf">Download as PDF</a>
+        </div>
+        <table class="feeding-table">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Type of Food</th>
+                    <th>Feedings Per Day</th>
+                    <th>Cups Per Meal</th>
+                    <th>Feeding Times</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feeding in feedings %}
+                <tr>
+                    <td>{{ feeding.pet.name }}</td>
+                    <td>{{ feeding.food_type }}</td>
+                    <td>{{ feeding.feedings_per_day }}</td>
+                    <td>{{ feeding.food_amount }}</td>
+                    <td>
+                        {% for time in feeding.feeding_times %}
+                            {{ time.strftime('%I:%M %p') }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('main.edit_feeding_schedule', feeding_id=feeding.id) }}" class="btn-edit">Edit</a>
+                        <form method="POST" action="{{ url_for('main.delete_feeding_schedule', feeding_id=feeding.id) }}" style="display:inline;">
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
