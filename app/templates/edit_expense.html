@@ -30,11 +30,13 @@
         border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
+        position: relative; /* Add position relative to form-container */
     }
     .expense-form h1 {
         font-size: 2em;
         margin-bottom: 20px;
         color: #71a2cf;
+        text-align: center; /* Center the heading */
     }
     .expense-form label {
         display: block;
@@ -58,9 +60,27 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        display: block;
+        margin: 0 auto; /* Center the button */
     }
     .expense-form .btn-save:hover {
         background-color: #5a92c6;
+    }
+    .expense-form .btn-back {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position: absolute; /* Position the button */
+        bottom: 20px;
+        left: 20px; /* Position at the bottom left */
+        text-decoration: none; /* Remove underline from link */
+    }
+    .expense-form .btn-back:hover {
+        background-color: #c82333;
     }
 </style>
 
@@ -84,6 +104,7 @@
 
             <button type="submit" class="btn-save">Save</button>
         </form>
+        <a href="{{ url_for('main.expense_management') }}" class="btn-back">Back</a> <!-- Added Back button -->
     </div>
 </div>
 {% endblock %}
