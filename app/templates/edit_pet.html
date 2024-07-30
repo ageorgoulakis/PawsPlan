@@ -31,11 +31,13 @@
             max-width: 600px; /* Ensure it doesn't grow too large on big screens */
             display: flex;
             flex-direction: column;
+            position: relative; /* Add relative positioning for Back button */
         }
         .form-container h1 {
             font-size: 2em;
             margin-bottom: 20px;
             color: #71a2cf; /* Light blue color */
+            text-align: center; /* Center the heading */
         }
         .form-container label {
             display: block;
@@ -52,6 +54,12 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .form-container .btn-container {
+            display: flex;
+            justify-content: center; /* Center the button container */
+            gap: 10px;
+            position: relative;
+        }
         .form-container .btn-save {
             font-size: 1.2em;
             padding: 10px 20px;
@@ -63,6 +71,21 @@
         }
         .form-container .btn-save:hover {
             background-color: #5a92c6; /* Darker blue */
+        }
+        .btn-back {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            background-color: #d9534f; /* Red color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 10px; /* Position at the bottom */
+            left: 10px; /* Position at the left */
+        }
+        .btn-back:hover {
+            background-color: #c9302c; /* Darker red */
         }
     </style>
 
@@ -86,8 +109,11 @@
                 <label for="picture">Upload Picture</label>
                 {{ form.picture }}
 
-                <button type="submit" class="btn-save">Save Changes</button>
+                <div class="btn-container">
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
             </form>
+            <a href="{{ url_for('main.manage_pets') }}" class="btn-back">Back</a> <!-- Back button -->
         </div>
     </div>
 {% endblock %}
