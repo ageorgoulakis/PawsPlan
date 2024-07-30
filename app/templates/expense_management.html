@@ -35,7 +35,6 @@
     .expense-form {
         width: 100%; /* Make the form as wide as the container */
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
     }
@@ -43,6 +42,7 @@
         font-size: 2em;
         margin-bottom: 20px;
         color: #71a2cf;
+        text-align: center; /* Center the heading */
     }
     .expense-form label {
         display: block;
@@ -59,6 +59,10 @@
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+    .expense-form .btn-container {
+        display: flex;
+        justify-content: center; /* Center the button container */
+    }
     .expense-form .btn-save {
         font-size: 1.2em;
         padding: 10px 20px;
@@ -71,10 +75,21 @@
     .expense-form .btn-save:hover {
         background-color: #5a92c6;
     }
+    .divider {
+        margin: 20px 0;
+        border-top: 5px solid #ddd; /* Thick line */
+    }
     .filter-form {
         display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the filter form */
         gap: 10px;
         margin-bottom: 20px;
+    }
+    .filter-form h2 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #71a2cf; /* Match the color */
     }
     .filter-form button {
         padding: 10px 20px;
@@ -87,13 +102,18 @@
     .filter-form button:hover {
         background-color: #5a92c6;
     }
+    .filter-form input[type="text"] {
+        padding: 10px;
+        width: 200px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
     .sort-box {
         display: none;
         flex-direction: column;
         gap: 10px;
         margin-bottom: 20px;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
     }
@@ -127,7 +147,6 @@
         display: none;
         margin-bottom: 20px;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
         font-size: 1.2em;
@@ -207,16 +226,21 @@
                 <label for="date">Date Paid</label>
                 {{ form.date }}
 
-                <button type="submit" class="btn-save">Save</button>
+                <div class="btn-container">
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
             </form>
         </div>
 
+        <div class="divider"></div> <!-- Added thick line -->
+
         <div class="filter-form">
             <h2>Expenses</h2>
-            <button type="button" class="btn btn-primary" onclick="toggleSortBox()">Filter</button>
-            <button type="button" class="btn btn-primary" onclick="toggleSummaryBox()">Summary</button>
-             <!-- Search Input -->
-            <input type="text" id="searchInput" placeholder="Search expenses..." oninput="filterExpenses()" style="padding: 10px; width: 200px;">
+            <div class="btn-container">
+                <button type="button" class="btn btn-primary" onclick="toggleSummaryBox()">Summary</button>
+                <button type="button" class="btn btn-primary" onclick="toggleSortBox()">Filter</button>
+            </div>
+            <input type="text" id="searchInput" placeholder="Search expenses..." oninput="filterExpenses()">
         </div>
 
         <div class="summary-box" id="summaryBox">
@@ -242,12 +266,12 @@
                         {% endfor %}
                     </select>
                     <select name="sort_amount" class="form-control mr-2">
-                        <option value="" selected>Select Sort Order</option>
+                        <option value="" selected>Sort By Amount</option>
                         <option value="asc" {% if request.args.get('sort_amount') == 'asc' %}selected{% endif %}>Low to High</option>
                         <option value="desc" {% if request.args.get('sort_amount') == 'desc' %}selected{% endif %}>High to Low</option>
                     </select>
                     <select name="sort_date" class="form-control mr-2">
-                        <option value="" selected>Select Sort Order</option>
+                        <option value="" selected>Sort By Date</option>
                         <option value="asc" {% if request.args.get('sort_date') == 'asc' %}selected{% endif %}>Past to Recent</option>
                         <option value="desc" {% if request.args.get('sort_date') == 'desc' %}selected{% endif %}>Recent to Past</option>
                     </select>
@@ -345,17 +369,16 @@
     }
 
     function filterExpenses() {
-    let input = document.getElementById('searchInput');
-    let filter = input.value.toUpperCase();
-    let table = document.querySelector('.expense-table');
-    let tr = table.getElementsByTagName('tr');
+        let input = document.getElementById('searchInput');
+        let filter = input.value.toUpperCase();
+        let table = document.querySelector('.expense-table');
+        let tr = table.getElementsByTagName('tr');
 
-    for (let i = 1; i < tr.length; i++) {
-        let tds = tr[i].getElementsByTagName('td');
-        let textValue = Array.from(tds).map(td => td.textContent || td.innerText).join(' ');
-        tr[i].style.display = textValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        for (let i = 1; i < tr.length; i++) {
+            let tds = tr[i].getElementsByTagName('td');
+            let textValue = Array.from(tds).map(td => td.textContent || td.innerText).join(' ');
+            tr[i].style.display = textValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        }
     }
-}
-
 </script>
 {% endblock %}
