@@ -1,6 +1,5 @@
-<!-- history_page.html -->
 {% extends "base.html" %}
-{% block title %}History Page{% endblock %}
+{% block title %}Pet History{% endblock %}
 {% block hideable_navbar %}
 <style>
     .navbar-tertiary {
@@ -33,16 +32,9 @@
         display: flex;
         flex-direction: column;
     }
-    .history-container {
-        width: 100%; /* Make the container take up the full width */
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #fff;
-    }
-    .history-container h1 {
-        font-size: 2em;
+    .history-title {
+        text-align: center;
+        font-size: 2.5em;
         margin-bottom: 20px;
         color: #71a2cf; /* Light blue color */
     }
@@ -76,36 +68,34 @@
 
 <div class="main-content-container">
     <div class="main-content">
-        <div class="history-container">
-            <h1>History Page</h1>
-            <form method="post" id="pet-select-form">
-                <div class="form-group">
-                    <label for="pet">Select Pet</label>
-                    <select name="pet" id="pet" class="form-control" onchange="document.getElementById('pet-select-form').submit();">
-                        <option value="" disabled selected>Select a pet</option>
-                        {% for pet in pets %}
-                            <option value="{{ pet.id }}" {% if selected_pet and selected_pet.id == pet.id %}selected{% endif %}>{{ pet.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </form>
-
-            <div class="history-events">
-                {% if selected_pet %}
-                    <h2>{{ selected_pet.name }}'s Medical History</h2>
-                    {% for event in history_events %}
-                        <div class="history-event">
-                            <div>
-                                <h4>{{ event.event_type }} on {{ event.formatted_date }} at {{ event.formatted_time }}</h4>
-                                <p>{{ event.description }}</p>
-                            </div>
-                            <div>
-                                <a href="{{ url_for('main.edit_pet_history', pet_id=selected_pet.id, history_id=event.id) }}" class="btn-edit-history">Edit</a>
-                            </div>
-                        </div>
+        <h1 class="history-title">Pet History</h1>
+        <form method="post" id="pet-select-form">
+            <div class="form-group">
+                <label for="pet">Select Pet</label>
+                <select name="pet" id="pet" class="form-control" onchange="document.getElementById('pet-select-form').submit();">
+                    <option value="" disabled selected>Select a pet</option>
+                    {% for pet in pets %}
+                        <option value="{{ pet.id }}" {% if selected_pet and selected_pet.id == pet.id %}selected{% endif %}>{{ pet.name }}</option>
                     {% endfor %}
-                {% endif %}
+                </select>
             </div>
+        </form>
+
+        <div class="history-events">
+            {% if selected_pet %}
+                <h2>{{ selected_pet.name }}'s Medical History</h2>
+                {% for event in history_events %}
+                    <div class="history-event">
+                        <div>
+                            <h4>{{ event.event_type }} on {{ event.formatted_date }} at {{ event.formatted_time }}</h4>
+                            <p>{{ event.description }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('main.edit_pet_history', pet_id=selected_pet.id, history_id=event.id) }}" class="btn-edit-history">Edit</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>
