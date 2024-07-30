@@ -1,4 +1,3 @@
-<!-- feeding_schedule.html -->
 {% extends "base.html" %}
 {% block title %}Feeding Schedule{% endblock %}
 {% block hideable_navbar %}
@@ -37,7 +36,6 @@
         width: 100%; /* Make the form as wide as the container */
         margin: 0 auto;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
     }
@@ -45,6 +43,7 @@
         font-size: 2em;
         margin-bottom: 20px;
         color: #71a2cf;
+        text-align: center; /* Center the heading */
     }
     .feeding-form label {
         display: block;
@@ -77,6 +76,7 @@
     }
     .feeding-form .btn-container {
         display: flex;
+        justify-content: center; /* Center the button container */
         gap: 10px;
     }
     .feeding-form .btn-save {
@@ -94,15 +94,21 @@
     .feeding-form .btn-download {
         font-size: 1.2em;
         padding: 10px 20px;
-        background-color: #5a92c6;
+        background-color: #71a2cf; /* Light blue color */
         color: #fff;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         text-decoration: none;
+        display: inline-block;
+        text-align: center;
     }
     .feeding-form .btn-download:hover {
-        background-color: #4a82b3;
+        background-color: #5a92c6;
+    }
+    .divider {
+        margin: 20px 0;
+        border-top: 5px solid #ddd; /* Thick line */
     }
     .feeding-table {
         margin-top: 20px;
@@ -140,6 +146,30 @@
         background-color: #d9534f;
         color: #fff;
     }
+    .feeding-heading {
+        text-align: center;
+        font-size: 2em;
+        color: #71a2cf; /* Match the color */
+        margin-top: 20px;
+    }
+    .btn-container-bottom {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .btn-pdf {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #71a2cf; /* Light blue color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-pdf:hover {
+        background-color: #5a92c6;
+    }
 </style>
 
 <div class="main-content-container">
@@ -172,13 +202,17 @@
 
                 <div class="btn-container">
                     <button type="submit" class="btn-save">Save</button>
-                    <a href="{{ url_for('main.feeding_schedule_pdf') }}" class="btn-download">Download as PDF</a>
                 </div>
             </form>
         </div>
 
+        <div class="divider"></div> <!-- Added thick line -->
+
         {% if feedings %}
-        <h2>Feeding Schedule</h2>
+        <h2 class="feeding-heading">Feeding Schedule</h2>
+        <div class="btn-container-bottom">
+            <a href="{{ url_for('main.feeding_schedule_pdf') }}" class="btn-pdf">Download as PDF</a>
+        </div>
         <table class="feeding-table">
             <thead>
                 <tr>

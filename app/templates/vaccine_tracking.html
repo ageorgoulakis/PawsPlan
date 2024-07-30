@@ -36,7 +36,6 @@
         width: 100%; /* Make the form as wide as the container */
         margin: 0 auto;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
     }
@@ -44,6 +43,7 @@
         font-size: 2em;
         margin-bottom: 20px;
         color: #71a2cf;
+        text-align: center; /* Center the heading */
     }
     .vaccine-form label {
         display: block;
@@ -63,7 +63,7 @@
     }
     .vaccine-form .btn-container {
         display: flex;
-        gap: 10px;
+        justify-content: center; /* Center the button container */
     }
     .vaccine-form .btn-save {
         font-size: 1.2em;
@@ -89,6 +89,10 @@
     }
     .vaccine-form .btn-download:hover {
         background-color: #4a82b3;
+    }
+    .divider {
+        margin: 20px 0;
+        border-top: 5px solid #ddd; /* Thick line */
     }
     .vaccine-table {
         margin-top: 20px;
@@ -128,8 +132,14 @@
     }
     .filter-form {
         display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the filter form */
         gap: 10px;
         margin-bottom: 20px;
+    }
+    .filter-form h2 {
+        margin-bottom: 10px;
+        color: #71a2cf; /* Match the color */
     }
     .filter-form button {
         padding: 10px 20px;
@@ -148,7 +158,6 @@
         gap: 10px;
         margin-bottom: 20px;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
     }
@@ -182,7 +191,7 @@
 
 <div class="main-content-container">
     <div class="main-content">
-        <div class="vaccine-form mt-4">
+        <div class="vaccine-form">
             <h1>Add Vaccine Record</h1>
             <form method="post">
                 {{ form.hidden_tag() }}
@@ -204,6 +213,8 @@
                 </div>
             </form>
         </div>
+
+        <div class="divider"></div> <!-- Added thick line -->
 
         <div class="filter-form">
             <h2>Vaccine Records</h2>

@@ -284,7 +284,6 @@ def history_page():
 
     return render_template('history_page.html', pets=pets, selected_pet=selected_pet, history_events=history_events)
 
-# Route for managing appointments, handles adding new vet appointments
 @bp.route("/appointments", methods=['GET', 'POST'])
 @login_required
 def appointments():
@@ -302,8 +301,8 @@ def appointments():
         db.session.commit()
         send_appointment_email(current_user, appointment)
 
+        # Schedule reminder email 24 hours before the appointment
         reminder_time = datetime.combine(appointment.date, appointment.time) - timedelta(hours=24)
-        print(f"Scheduling reminder for {reminder_time}")
         scheduler.add_job(
             func=send_reminder_email,
             args=[current_user.id, appointment.id],
@@ -314,8 +313,40 @@ def appointments():
         )
 
         flash('Appointment saved!', 'success')
-        return redirect(url_for('main.dashboard'))
-    return render_template('appointments.html', form=form)
+        return redirect(url_for('main.appointments'))
+    
+    appointments = VetAppointment.query.join(Pet).filter(Pet.user_id == current_user.id).all()
+    return render_template('appointments.html', form=form, appointments=appointments)
+
+
+@bp.route("/edit_appointment/<int:appointment_id>", methods=['GET', 'POST'])
+@login_required
+def edit_appointment(appointment_id):
+    appointment = VetAppointment.query.get_or_404(appointment_id)
+    form = VetAppointmentForm(obj=appointment)
+    form.pet.choices = [(pet.id, pet.name) for pet in Pet.query.filter_by(user_id=current_user.id).all()]
+
+    if form.validate_on_submit():
+        appointment.pet_id = form.pet.data
+        appointment.date = form.date.data
+        appointment.time = form.time.data
+        appointment.vet_name = form.vet_name.data
+        appointment.description = form.description.data
+        db.session.commit()
+        flash('Appointment updated!', 'success')
+        return redirect(url_for('main.appointments'))
+
+    return render_template('edit_appointment.html', form=form, appointment_id=appointment.id)
+
+@bp.route("/delete_appointment/<int:appointment_id>", methods=['POST'])
+@login_required
+def delete_appointment(appointment_id):
+    appointment = VetAppointment.query.get_or_404(appointment_id)
+    db.session.delete(appointment)
+    db.session.commit()
+    flash('Appointment deleted!', 'success')
+    return redirect(url_for('main.appointments'))
+
 
 # Route for vaccine tracking, handles displaying and adding vaccine records
 @bp.route('/vaccine_tracking', methods=['GET', 'POST'])

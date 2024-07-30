@@ -13,6 +13,14 @@
         }
         .navbar-custom .nav-link {
             color: black; /* Black button color */
+            font-weight: 700; /* Make the text bold */
+            font-size: 16px; /* Increase font size */
+            padding: 15px 10px; /* Adjust padding for closer spacing */
+            border-radius: 10px; /* Rounded corners for the box */
+            transition: background-color 0.3s; /* Smooth transition */
+        }
+        .navbar-custom .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.1); /* Highlight on hover */
         }
         .navbar-brand {
             color: black; /* Change text color to black */
@@ -45,6 +53,14 @@
         .navbar-secondary .user-email {
             color: white; /* Change user email color to white */
             margin-left: auto; /* Push user email to the right */
+        }
+        .navbar-secondary .auth-buttons {
+            margin-left: auto; /* Push auth buttons to the right */
+            display: flex;
+            gap: 10px;
+        }
+        .navbar-secondary .auth-buttons .nav-link {
+            color: white; /* White text color for auth buttons */
         }
         .navbar-tertiary {
             background-color: #71a2cf; /* Blue color */
@@ -88,10 +104,11 @@
             width: auto; /* Maintain aspect ratio */
             margin-right: 0px; /* Add margin to separate from text */
         }
-        .navbar-nav .dropdown-menu {
-            max-width: 200px; /* Set maximum width for the dropdown menu */
-            white-space: nowrap; /* Prevent text wrapping */
-            overflow: hidden; /* Prevent overflow */
+        .navbar-nav {
+            flex: 1; /* Allow the navbar to fill the space */
+            justify-content: center; /* Center the navbar items */
+            gap: 15px; /* Add gap between the items */
+            margin-left: -180px; /* Shift items 20px to the left */
         }
     </style>
     <!-- Add FontAwesome for the paw icon -->
@@ -111,6 +128,11 @@
                         <a class="dropdown-item" href="{{ url_for('main.logout') }}">Logout</a>
                     </div>
                 </div>
+            {% else %}
+                <div class="auth-buttons">
+                    <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+                    <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                </div>
             {% endif %}
         </nav>
         <!-- Main Navbar -->
@@ -123,30 +145,28 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Features
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ url_for('main.manage_pets') }}">Manage Pets</a>
-                                <a class="dropdown-item" href="{{ url_for('main.history_page') }}">History</a>
-                                <a class="dropdown-item" href="{{ url_for('main.appointments') }}">Vet Appointments</a>
-                                <a class="dropdown-item" href="{{ url_for('main.vaccine_tracking') }}">Vaccine Tracking</a>
-                                <a class="dropdown-item" href="{{ url_for('main.feeding_schedule') }}">Feeding Schedule</a>
-                                <a class="dropdown-item" href="{{ url_for('main.expense_management') }}">Expense Management</a>
-                            </div>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                            <a class="nav-link" href="{{ url_for('main.manage_pets') }}">Pets</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+                            <a class="nav-link" href="{{ url_for('main.history_page') }}">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.appointments') }}">Appointments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.vaccine_tracking') }}">Vaccinations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.feeding_schedule') }}">Feeding</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.expense_management') }}">Expenses</a>
                         </li>
                     {% endif %}
                 </ul>
