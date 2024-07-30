@@ -61,7 +61,7 @@
         justify-content: center;
     }
     .card {
-        width: calc(33.33% - 20px); /* Adjusted width for horizontal layout */
+        width: calc(50% - 20px); /* Two cards per row */
         max-width: 400px;
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -74,10 +74,11 @@
         flex-direction: column;
         align-items: center;
         text-align: center; /* Center text inside cards */
+        text-decoration: none; /* Remove underline from links */
     }
     .card img {
         width: 100%;
-        height: auto;
+        height: 250px; /* Fixed height for uniformity */
         object-fit: cover;
         border-bottom: 1px solid #ddd;
     }
@@ -128,6 +129,7 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
+        text-decoration: none; /* Remove underline from links */
     }
     .layout-container {
         display: flex;
@@ -195,7 +197,7 @@
                 <h1>Your Pets</h1>
                 <div class="card-container">
                     {% for pet in pets %}
-                        <div class="card">
+                        <a href="{{ url_for('main.manage_pets') }}" class="card">
                             <img src="{{ url_for('static', filename='pet_pics/' ~ pet.picture) }}" alt="{{ pet.name }}">
                             <div class="card-body">
                                 <h5 class="card-title">{{ pet.name }}</h5>
@@ -203,13 +205,13 @@
                                 <p class="card-text">Breed: {{ pet.breed }}</p>
                                 <p class="card-text">Gender: {{ pet.gender }}</p>
                             </div>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
             </div>
             <div class="additional-info-wrapper">
                 <div class="additional-info-container">
-                    <div class="additional-info-card">
+                    <a href="{{ url_for('main.vaccine_tracking') }}" class="additional-info-card">
                         <h2 class="header-color">Next Vaccine</h2>
                         <div class="additional-info-card-inner">
                             {% if closest_vaccine_record %}
@@ -222,15 +224,15 @@
                                 <p>No upcoming vaccinations.</p>
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="additional-info-card">
+                    </a>
+                    <a href="{{ url_for('main.expense_management') }}" class="additional-info-card">
                         <h2 class="header-color">Expenses</h2>
                         <div class="additional-info-card-inner">
                             <div class="card-body">
                                 <p class="card-text">Total Expenses: ${{ '%.2f' % total_expenses }}</p>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -239,7 +241,7 @@
                 <h2 class="header-color">Appointments</h2>
                 <div class="card-container">
                     {% for appointment in appointments %}
-                        <div class="appointment-card">
+                        <a href="{{ url_for('main.appointments') }}" class="appointment-card">
                             <div class="card-body">
                                 <div class="appointment-info">
                                     <span><strong>Appointment -</strong></span>
@@ -251,7 +253,7 @@
                                 <p class="card-text">Veterinarian: {{ appointment.vet_name }}</p>
                                 <p class="card-text">{{ appointment.description }}</p>
                             </div>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
             </div>
