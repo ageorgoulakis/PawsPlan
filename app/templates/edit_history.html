@@ -31,11 +31,13 @@
         max-width: 600px; /* Ensure it doesn't grow too large on big screens */
         display: flex;
         flex-direction: column;
+        position: relative; /* Add relative positioning for the back button */
     }
     .history-container h1 {
         font-size: 2em;
         margin-bottom: 20px;
         color: #71a2cf; /* Light blue color */
+        text-align: center; /* Center the heading */
     }
     .history-container label {
         display: block;
@@ -53,6 +55,11 @@
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+    .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
     .history-container .btn-save {
         font-size: 1.2em;
         padding: 10px 20px;
@@ -64,6 +71,21 @@
     }
     .history-container .btn-save:hover {
         background-color: #5a92c6; /* Darker blue */
+    }
+    .btn-back {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #d9534f; /* Red color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+    }
+    .btn-back:hover {
+        background-color: #c9302c; /* Darker red */
     }
 </style>
 
@@ -84,8 +106,11 @@
             <label for="description">Description</label>
             {{ form.description }}
 
-            <button type="submit" class="btn-save">Save</button>
+            <div class="btn-container">
+                <button type="submit" class="btn-save">Save</button>
+            </div>
         </form>
+        <a href="{{ url_for('main.history_page') }}" class="btn-back">Back</a>
     </div>
 </div>
 {% endblock %}
