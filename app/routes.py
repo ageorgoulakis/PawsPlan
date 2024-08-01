@@ -354,6 +354,7 @@ def delete_appointment(appointment_id):
 def vaccine_tracking():
     form = VaccineTrackingForm()
     pets = Pet.query.filter_by(user_id=current_user.id).all()
+    form.pet.choices = [(pet.id, pet.name) for pet in pets]
     pet_id = request.args.get('pet')
     records_query = VaccineRecord.query.join(Pet).filter(Pet.user_id == current_user.id)
 
@@ -412,6 +413,8 @@ def delete_vaccine(vaccine_id):
 @login_required
 def feeding_schedule():
     form = FeedingScheduleForm()
+    form.pet.choices = [(pet.id, pet.name) for pet in Pet.query.filter_by(user_id=current_user.id).all()]
+    
     if form.validate_on_submit():
         feeding_times = [form.feeding_time_1.data, form.feeding_time_2.data, form.feeding_time_3.data, form.feeding_time_4.data, form.feeding_time_5.data]
         feeding_times = [time for time in feeding_times if time]
@@ -495,7 +498,13 @@ def feeding_schedule_pdf():
 def expense_management():
     form = ExpenseForm()
     pets = Pet.query.filter_by(user_id=current_user.id).all()
-    expense_types = ['Appointments','Vaccination','Food','Medication','Grooming','Toy and Entertainment','Training','Insurance','Pet Sitting','Travel','Registration','Accessories','Miscellaneous Supplies','Dietary Supplements','Subscriptions','Events','Other']
+    form.pet.choices = [(pet.id, pet.name) for pet in pets]  # Added line
+
+    expense_types = [
+        'Appointments', 'Vaccination', 'Food', 'Medication', 'Grooming', 'Toy and Entertainment', 
+        'Training', 'Insurance', 'Pet Sitting', 'Travel', 'Registration', 'Accessories', 
+        'Miscellaneous Supplies', 'Dietary Supplements', 'Subscriptions', 'Events', 'Other'
+    ]
 
     if form.validate_on_submit():
         expense = Expense(
