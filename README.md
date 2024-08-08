@@ -45,7 +45,7 @@ Explanation of Key Files and Directories
 
 - `app/`: This is the core of the PawsPlan application. It contains the main logic, route handlers, form definitions, and templates for the web application.
 - `static/`: Contains static files like CSS, JavaScript, and images used in the web application.
-- `templates/`: Contains Jinja2 HTML templates for rendering different pages of the application.
+- `templates/`: Contains HTML templates for rendering different pages of the application.
 - `__init__.py`: Sets up the Flask application using the factory pattern, initializes extensions, and registers blueprints.
 - `forms.py`: Contains classes for handling user input through forms, using Flask-WTF.
 - `models.py`: Defines the structure of the database tables and their relationships using SQLAlchemy.
